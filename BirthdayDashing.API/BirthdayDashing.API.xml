@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>BirthdayDashing.API</name>
+    </assembly>
+    <members>
+        <member name="M:BirthdayDashing.API.Startup.ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            This method gets called by the runtime. Use this method to add services to the container.
+            </summary>
+            <param name="services"></param>
+        </member>
+        <member name="M:BirthdayDashing.API.Startup.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Hosting.IWebHostEnvironment)">
+            <summary>
+            This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+            </summary>
+            <param name="app"></param>
+            <param name="env"></param>
+        </member>
+        <member name="T:BirthdayDashing.API.StartupConfig.ApplicationBuilderExtention">
+            <summary>
+            configure the HTTP request pipeline
+            </summary>
+        </member>
+        <member name="T:BirthdayDashing.API.StartupConfig.ServiceExtention">
+            <summary>
+            Startup Configure Services
+            </summary>
+        </member>
+    </members>
+</doc>

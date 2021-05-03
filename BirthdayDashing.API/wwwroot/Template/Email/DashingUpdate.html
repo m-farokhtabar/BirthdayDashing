@@ -1,0 +1,514 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Birthday Dashing</title>
+    <meta charset="utf-8">
+    <!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">-->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <style type="text/css">
+        body {
+            background: #F4F7FA;
+        }
+
+        #outlook a {
+            padding: 0;
+        }
+
+        .ReadMsgBody {
+            width: 100%;
+        }
+
+        .ExternalClass {
+            width: 100%;
+        }
+
+            .ExternalClass * {
+                line-height: 100%;
+            }
+
+        body {
+            margin: 0;
+            padding: 0;
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+        }
+
+        table,
+        td {
+            border-collapse: collapse;
+            mso-table-lspace: 0pt;
+            mso-table-rspace: 0pt;
+        }
+
+        img {
+            border: 0;
+            height: auto;
+            line-height: 100%;
+            outline: none;
+            text-decoration: none;
+            -ms-interpolation-mode: bicubic;
+        }
+
+        #main {
+            width: 100%;
+            height: 100%;
+        }
+
+
+        /* footer styling*/
+        ul {
+            padding: 0;
+            list-style: none;
+        }
+
+        .footer-social-icons {
+            width: 350px;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .social-icon {
+            color: #fff;
+        }
+
+        ul.social-icons {
+            margin-top: 10px;
+        }
+
+        .social-icons li {
+            vertical-align: top;
+            display: inline;
+            height: 100px;
+        }
+
+        .social-icons a {
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .fa {
+            display: inline-block;
+            font: normal normal normal 14px/1 FontAwesome;
+            font-size: inherit;
+            text-rendering: auto;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .fa-facebook {
+            padding: 10px 14px;
+            -o-transition: .5s;
+            -ms-transition: .5s;
+            -moz-transition: .5s;
+            -webkit-transition: .5s;
+            transition: .5s;
+            background-color: #3d5b99;
+        }
+
+        .fa-twitter {
+            padding: 10px 12px;
+            -o-transition: .5s;
+            -ms-transition: .5s;
+            -moz-transition: .5s;
+            -webkit-transition: .5s;
+            transition: .5s;
+            background-color: #00aced;
+        }
+
+        .fa-linkedin {
+            padding: 10px 14px;
+            -o-transition: .5s;
+            -ms-transition: .5s;
+            -moz-transition: .5s;
+            -webkit-transition: .5s;
+            transition: .5s;
+            background-color: #0073a4;
+        }
+
+        .fa-envelope {
+            padding: 10px 12px;
+            -o-transition: .5s;
+            -ms-transition: .5s;
+            -moz-transition: .5s;
+            -webkit-transition: .5s;
+            transition: .5s;
+            background-color: #80d4ff;
+        }
+
+
+        .fa-google-plus {
+            padding: 10px 9px;
+            -o-transition: .5s;
+            -ms-transition: .5s;
+            -moz-transition: .5s;
+            -webkit-transition: .5s;
+            transition: .5s;
+            background-color: #e25714;
+        }
+
+
+        #outlook a {
+            padding: 0;
+        }
+
+        .ReadMsgBody {
+            width: 100%;
+        }
+
+        .ExternalClass {
+            width: 100%;
+        }
+
+            .ExternalClass * {
+                line-height: 100%;
+            }
+
+        body {
+            margin: 0;
+            padding: 0;
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+        }
+
+        table,
+        td {
+            border-collapse: collapse;
+            mso-table-lspace: 0pt;
+            mso-table-rspace: 0pt;
+        }
+
+        img {
+            border: 0;
+            height: auto;
+            line-height: 100%;
+            outline: none;
+            text-decoration: none;
+            -ms-interpolation-mode: bicubic;
+        }
+
+        p {
+            display: block;
+            margin: 13px 0;
+        }
+
+        @media only screen and (max-width:480px) {
+            @-ms-viewport {
+                width: 320px;
+            }
+
+            @viewport {
+                width: 320px;
+            }
+        }
+
+        p {
+            margin: 0 0 24px 0;
+        }
+
+        a {
+            color: #00b9ff;
+        }
+
+        hr {
+            margin: 32px 0;
+            border-top: 1px #e2e6e8;
+        }
+
+        dt {
+            font-size: 13px;
+            margin-left: 0;
+        }
+
+        dd {
+            color: #37517e;
+            margin-bottom: 24px;
+            margin-left: 0;
+        }
+
+        h5 {
+            font-size: 16px;
+            line-height: 24px;
+            color: #2e4369;
+        }
+
+        pre {
+            display: block;
+            padding: 16px;
+            padding: 12px 24px;
+            margin: 0 0 48px;
+            font-size: 14px;
+            line-height: 24px;
+            color: #4a5860;
+            word-break: break-all;
+            word-wrap: break-word;
+            background-color: #f2f5f7;
+            border-radius: 3px;
+        }
+
+        .body-wrapper {
+            background: #F4F7FA;
+            padding: 0px;
+            margin: auto;
+        }
+
+        .content-wrapper {
+            max-width: 536px;
+            padding: 32px;
+            padding-bottom: 48px;
+        }
+
+        .footer-wrapper div {
+            color: #37517e !important;
+        }
+
+            .footer-wrapper div a {
+                color: #00b9ff !important;
+            }
+
+        .hero {
+            color: #37517e;
+            font-size: 22px;
+            line-height: 30px;
+        }
+
+        .page-header {
+            border-bottom: 1px solid #eaebed;
+            padding-bottom: 16px;
+        }
+
+        .mb-0 {
+            margin-bottom: 0 !important;
+        }
+
+        .mt-0 {
+            margin-top: 0 !important;
+        }
+
+        .btn {
+            box-sizing: border-box;
+            display: inline-block;
+            min-height: 36px;
+            padding: 12px 24px;
+            margin: 0 0 24px;
+            font-size: 16px;
+            font-weight: 600;
+            line-height: 24px;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: middle;
+            cursor: pointer;
+            border: 0;
+            border-radius: 3px;
+            color: #fff;
+            background-color: #00b9ff;
+            text-decoration: none;
+            -webkit-transition: all .15s ease-in-out;
+            -o-transition: all .15s ease-in-out;
+            transition: all .15s ease-in-out;
+        }
+
+            .btn:hover {
+                background-color: #00a4df;
+            }
+
+            .btn:active {
+                background-color: #008ec0;
+            }
+
+        @media screen and (min-width: 576px) and (max-width: 768px) {
+            .body-wrapper {
+                padding: 24px !important;
+            }
+
+            .content-wrapper {
+                max-width: 504px !important;
+                padding: 48px !important;
+            }
+        }
+
+        @media screen and (min-width: 768px) {
+            .body-wrapper {
+                padding: 48px !important;
+            }
+
+            .content-wrapper {
+                max-width: 456px !important;
+                padding: 72px !important;
+                padding-top: 48px !important;
+            }
+        }
+
+        @media only screen and (min-width:480px) {
+            .mj-column-per-100 {
+                width: 100% !important;
+            }
+        }
+    </style>
+</head>
+
+<body leftmargin="0" marginwidth="0" topmargin="0" marginheight="0" offset="0" style="margin: 0pt auto; padding: 0px; background:#F4F7FA;">
+    <div class="mj-container" style="background-color:#F4F7FA;">
+        <div style="margin:0px auto;max-width:600px;background:#F4F7FA">
+            <table id="main" cellpadding="0" cellspacing="0" border="0" bgcolor="#F4F7FA">
+                <tbody>
+                    <tr>
+                        <td valign="top">
+                            <table class="innermain" cellpadding="0" width="580" cellspacing="0" border="0" bgcolor="#F4F7FA" align="center" style="margin:0 auto; table-layout: fixed;">
+                                <tbody>
+                                    <!-- START of MAIL Content -->
+                                    <tr>
+                                        <td colspan="4">
+                                            <!-- Logo start here -->
+                                            <table class="logo" width="100%" cellpadding="0" cellspacing="0" border="0">
+                                                <tbody>
+                                                    <tr>
+                                                        <td colspan="2" height="30"></td>
+                                                    </tr>
+
+                                                    <tr>
+                                                        <td colspan="2" height="30"></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+
+                                            <!-- Main CONTENT -->
+                                            <table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#ffffff" style="border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                                                <tbody>
+                                                    <tr>
+                                                        <td height="40"></td>
+                                                    </tr>
+                                                    <tr style=" color:#4E5C6E; font-size:14px; line-height:20px; margin-top:20px;">
+                                                        <td class="content" colspan="2" valign="top" align="center" style="padding-left:90px; padding-right:90px;">
+                                                            <table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#ffffff">
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td align="center" valign="bottom" colspan="2" cellpadding="3">
+                                                                            <img alt="Birthday Dashing" width="80" src="https://ucarecdn.com/65a98cc9-b7f4-4d42-ac16-4101bead6548/logo.png" />
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td height="30" &nbsp;=""></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td align="center">
+                                                                            <span style="color:#000000;font-size:32px;line-height: 24px; font-weight: 900;">
+                                                                                Dashing Update {0}
+                                                                            </span>
+
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td height="24" &nbsp;=""></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td height="1" bgcolor="#DAE1E9"></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td height="24" &nbsp;=""></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td align="center">
+                                                                            <span style="color:#48545d;font-size:14px;line-height:24px;">
+                                                                                Birthday Dashing family congratulations to {0}. They just posted a new dashing update lets check it out.<br/><b><i>Social Networking at its best! Birthday Dashing is where users gives and always recieve!!!</i></b>
+                                                                            </span>
+
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td height="20" &nbsp;=""></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td valign="top" width="48%" align="center">
+                                                                            <span>
+                                                                                <a href="https://birthdaydashing.com/{0}" style="display:block; padding:15px 25px; font-size: 18px; background-color:#28c101; color:#ffffff; font-weight:bold; border-radius:3px; text-decoration:none;"><img src="https://ucarecdn.com/{1}/-/resize/500x/fallback.jpg" alt="Avatar" class="img-fluid" style="width:60px"></a>
+                                                                            </span>
+
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td height="20" &nbsp;=""></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td align="center">
+                                                                            <img src="https://s3.amazonaws.com/app-public/Coinbase-notification/hr.png" width="54" height="2" border="0">
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td height="20" &nbsp;=""></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td align="center">
+                                                                            <p style="color:#a2a2a2; font-size:12px; line-height:17px; font-style:italic;">If you did not sign up for this account you can ignore this email and the account will be deleted.</p>
+                                                                        </td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td height="60"></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+
+                                            <!-- Main CONTENT end here -->
+                                            <!-- PROMO column start here -->
+
+                                            <table id="promo" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:20px;">
+                                                <tbody>
+                                                    <tr>
+                                                        <td colspan="2" height="20"></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td colspan="2" height="10">
+                                                            <div class="address" style="font-size: 13px;color: #666; margin-top:30px; font-weight: 100; text-align: center;">
+                                                                <div style="margin-bottom: 4px;">Birthday Dashing LLC</div>
+                                                                <div style="margin-bottom: 4px;">Las Vegas, Neveda, USA 89129</div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <!-- FOOTER start here -->
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                <tbody>
+                                    <tr>
+                                        <td valign="top" align="center">
+                                            <div class="footer-social-icons">
+                                                <ul class="social-icons">
+                                                    <li><a href="https://facebook.com/birthdaydashing" class="social-icon"> <i class="fa fa-facebook">Facebook</i></a></li>
+                                                    <li><a href="https://twitter.com/birthdaydashing" class="social-icon"> <i class="fa fa-twitter">Twitter</i></a></li>
+                                                    <li><a href="https://linkedin.com/birthdaydashing" class="social-icon"> <i class="fa fa-linkedin">Linkedin</i></a></li>
+                                                </ul>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td valign="top" align="center">
+                                            <span style="font-family: -apple-system,BlinkMacSystemFont,&#39;Segoe UI&#39;,&#39;Roboto&#39;,&#39;Oxygen&#39;,&#39;Ubuntu&#39;,&#39;Cantarell&#39;,&#39;Fira Sans&#39;,&#39;Droid Sans&#39;,&#39;Helvetica Neue&#39;,sans-serif; color:#9EB0C9; font-size:10px;">
+                                                &copy;
+                                                <a href="www.birthdaydashing.com" target="_blank" style="color:#9EB0C9 !important; text-decoration:none;">Birthday Dashing</a> 2019 <a href="#" target="_blank" style="color:#9EB0C9 !important;">Unsubcribe</a>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td height="50">&nbsp;</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <!-- FOOTER end here -->
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
