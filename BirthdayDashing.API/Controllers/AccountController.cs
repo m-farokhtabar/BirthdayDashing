@@ -39,13 +39,16 @@ namespace BirthdayDashing.API.Controllers
             Host = host;
             AppSettings = appSettings.Value;
         }
+
         [AllowAnonymous]
         [Consumes(MediaTypeNames.Application.Json)]
         [HttpPost]
-        public async Task Register([FromBody] AddUserDto user)
+        public async Task<Boolean> Register([FromBody] AddUserDto user)
         {
-            await WriteService.AddAsync(user);        
+            await WriteService.AddAsync(user);
+            return true;
         }
+
         [AllowAnonymous]
         [Consumes(MediaTypeNames.Application.Json)]
         [HttpPost("ConfirmByEmail")]
@@ -53,6 +56,7 @@ namespace BirthdayDashing.API.Controllers
         {
             await WriteService.ConfirmByEmailAsync(confirmUser);
         }
+
         [AllowAnonymous]
         [HttpPost("Login")]
         public async Task<AuthenticatedUserViewMoel> Login(LoginDto login)
@@ -80,7 +84,8 @@ namespace BirthdayDashing.API.Controllers
             var token = tokenHandler.CreateToken(tokenDescriptor);
 
             return new AuthenticatedUserViewMoel() { Id = userRolesInfo.Id, Token = tokenHandler.WriteToken(token) };            
-        }        
+        }  
+        
         [HttpGet("{id}")]
         public async Task<UserDto> Get(Guid id)
         {
