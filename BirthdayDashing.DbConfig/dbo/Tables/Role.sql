@@ -1,5 +1,5 @@
 ﻿CREATE TABLE [dbo].[Role] (
-    [Id]         UNIQUEIDENTIFIER NOT NULL DEFAULT newID(),
+    [Id]         UNIQUEIDENTIFIER NOT NULL ,
     [Name]       NVARCHAR (50)    NOT NULL,
     [RowVersion] ROWVERSION       NOT NULL ,
     CONSTRAINT [PK_Role] PRIMARY KEY CLUSTERED ([Id] ASC)
