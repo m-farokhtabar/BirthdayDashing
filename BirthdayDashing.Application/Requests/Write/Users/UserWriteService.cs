@@ -73,6 +73,16 @@ namespace BirthdayDashing.Application.Requests.Write.Users
             await Repository.UpdateAsync(entity);
             UnitOfWork.SaveChanges();
         }
+        public async Task ChangePasswordAsync(Guid id, ChangePasswordDto password)
+        {
+            User entity = await Repository.GetAsync(id);
+            if (entity is null)
+                throw new Exception("User is not found");
+            entity.UpdatePassword(password.NewPassword,password.OldPassword);
+            await Repository.UpdatePasswordAsync(entity);
+            UnitOfWork.SaveChanges();
+        }
+
         private async Task SendConfirmEmail(User entity, VerificationCode VerificationCodeEntity)
         {
             string Body = await TemplateProvider.Get(EmailSender.Setting.VerifyCodeTemplateName[0]);

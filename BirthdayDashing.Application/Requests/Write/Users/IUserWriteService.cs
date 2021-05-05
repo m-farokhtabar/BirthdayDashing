@@ -8,6 +8,7 @@ namespace BirthdayDashing.Application.Requests.Write.Users
     {
         Task AddAsync(AddUserDto user);
         Task UpdateAsync(Guid Id, UpdateUserDto user);
-        Task ConfirmByEmailAsync(ConfirmUserDto confirmUser);        
+        Task ConfirmByEmailAsync(ConfirmUserDto confirmUser);
+        Task ChangePasswordAsync(Guid id, ChangePasswordDto password);
     }
 }

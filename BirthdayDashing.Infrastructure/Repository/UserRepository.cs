@@ -39,5 +39,10 @@ namespace BirthdayDashing.Infrastructure.Repository
             const string command = "UPDATE [User] SET [IsApproved]=@IsApproved WHERE [Id]=@Id AND [RowVersion]=@RowVersion";
             await DbEntities.ExecuteAsync(command, new { IsApproved = entity.IsApproved, Id = entity.Id, RowVersion = entity.RowVersion }, Transaction);
         }
+        public async Task UpdatePasswordAsync(User entity)
+        {
+            const string command = "UPDATE [User] SET [Password]=@Password WHERE [Id]=@Id AND [RowVersion]=@RowVersion";
+            await DbEntities.ExecuteAsync(command, new { Password = entity.Password, Id = entity.Id, RowVersion = entity.RowVersion }, Transaction);
+        }
     }
 }

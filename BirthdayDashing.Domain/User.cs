@@ -45,6 +45,16 @@ namespace BirthdayDashing.Domain
             PhoneNumber = phoneNumber;
             ImageUrl = imageUrl;
         }
+        public void UpdatePassword(string newPassword,string oldPassword)
+        {
+            if (Security.VerifyPassword(oldPassword, Password))
+            {
+                Validate(nameof(Password), newPassword, Validator.StringIsNotNullOrWhiteSpace);
+                Password = Security.HashPassword(newPassword);
+            }
+            else
+                throw new Exception("Password is wrong");
+        }
         public void Approved()
         {
             IsApproved = true;

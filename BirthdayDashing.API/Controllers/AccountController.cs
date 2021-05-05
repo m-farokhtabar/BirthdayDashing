@@ -124,5 +124,16 @@ namespace BirthdayDashing.API.Controllers
             await WriteService.UpdateAsync(id, user);
             return Ok(true);
         }
+
+        [Consumes(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status404NotFound)]
+        [HttpPut("ChangePassword/{id}")]
+        public async Task<ActionResult<Feedback<bool>>> ChangePassword(Guid id, [FromBody] ChangePasswordDto password)
+        {
+            await WriteService.ChangePasswordAsync(id, password);
+            return Ok(true);
+        }
     }
 }

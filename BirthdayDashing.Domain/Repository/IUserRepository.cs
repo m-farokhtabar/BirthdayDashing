@@ -9,5 +9,6 @@ namespace BirthdayDashing.Domain.Repository
         Task AddAsync(User entity);
         Task UpdateAsync(User entity);
         Task UpdateIsApprovedAsync(User entity);
+        Task UpdatePasswordAsync(User entity);
     }
 }
