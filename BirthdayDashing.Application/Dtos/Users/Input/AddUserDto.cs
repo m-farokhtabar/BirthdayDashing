@@ -16,5 +16,9 @@ namespace BirthdayDashing.Application.Dtos.Users.Input
         [Required]
         [MaxLength(20)]
         public string PostalCode { get; set; }
+        [MaxLength(50)]
+        public string FirstName { get; set; }
+        [MaxLength(50)]
+        public string LastName { get; set; }
     }
 }

@@ -34,11 +34,19 @@ namespace BirthdayDashing.Application.Requests.Write.Users
             var UserRoleId = await RoleReadService.GetIdByNameAsync(Role.User);
             if (UserRoleId is null || UserRoleId.HasValue == false)
                 throw new Exception("There are not any roles to assign");
-            User entity = new(user.Email, user.Password, user.PostalCode, user.Birthday, UserRoleId.Value);
-            await Repository.AddAsync(entity);
+            User entity = new(user.Email, user.Password, user.PostalCode, user.Birthday, UserRoleId.Value, user.FirstName, user.LastName);
             VerificationCode VerificationCodeEntity = new(entity.Id, EmailSender.Setting.ConfirmEmailExpireTimeInMinute);
-            await VerificationCodeRepository.AddAsync(VerificationCodeEntity);
-            UnitOfWork.SaveChanges();
+            try
+            {
+                await Repository.AddAsync(entity);
+                await VerificationCodeRepository.AddAsync(VerificationCodeEntity);
+                UnitOfWork.SaveChanges();
+            }
+            catch
+            {
+                UnitOfWork.RollBack();
+                throw;
+            }
             await SendConfirmEmail(entity, VerificationCodeEntity);
         }
 
@@ -60,8 +68,16 @@ namespace BirthdayDashing.Application.Requests.Write.Users
                 }
                 if (!entity.IsApproved)
                     throw new Exception("Code is not valid");
-                await Repository.UpdateIsApprovedAsync(entity);
-                UnitOfWork.SaveChanges();
+                try
+                {
+                    await Repository.UpdateIsApprovedAsync(entity);
+                    UnitOfWork.SaveChanges();
+                }
+                catch
+                {
+                    UnitOfWork.RollBack();
+                    throw;
+                }
             }
         }
         public async Task UpdateAsync(Guid id, UpdateUserDto user)
@@ -78,9 +94,17 @@ namespace BirthdayDashing.Application.Requests.Write.Users
             User entity = await Repository.GetAsync(id);
             if (entity is null)
                 throw new Exception("User is not found");
-            entity.UpdatePassword(password.NewPassword,password.OldPassword);
-            await Repository.UpdatePasswordAsync(entity);
-            UnitOfWork.SaveChanges();
+            entity.UpdatePassword(password.NewPassword, password.OldPassword);
+            try
+            {
+                await Repository.UpdatePasswordAsync(entity);
+                UnitOfWork.SaveChanges();
+            }
+            catch
+            {
+                UnitOfWork.RollBack();
+                throw;
+            }
         }
 
         private async Task SendConfirmEmail(User entity, VerificationCode VerificationCodeEntity)

@@ -18,12 +18,28 @@ namespace BirthdayDashing.Infrastructure.Data.Write
             }
             catch
             {
-                DbContext.GetTransactionInstance().Rollback();
+                RollBackTrans();
                 throw new Exception("Data was not saved");
             }
             finally
             {
                 DbContext.DisposeConnection();
+            }
+        }
+        public void RollBack()
+        {
+            RollBackTrans();
+            DbContext.DisposeConnection();
+        }
+        private void RollBackTrans()
+        {
+            try
+            {
+                DbContext.GetTransactionInstance().Rollback();
+            }
+            catch
+            {
+                throw;
             }
         }
     }
