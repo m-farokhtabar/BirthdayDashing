@@ -49,7 +49,7 @@ namespace BirthdayDashing.API.Controllers
         
         [AllowAnonymous]
         [Consumes(MediaTypeNames.Application.Json)]
-        [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status404NotFound)]        
+        [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status404NotFound)]
         [HttpPost("ConfirmByEmail")]
         public async Task<ActionResult<Feedback<bool>>> ConfirmByEmail(ConfirmUserDto confirmUser)
         {
@@ -64,8 +64,8 @@ namespace BirthdayDashing.API.Controllers
         [HttpPost("Login")]        
         public async Task<ActionResult<Feedback<AuthenticatedUserViewMoel>>> Login(LoginDto login)
         {
-            var userRolesInfo = await ReadService.GetAuthentocateDataAsync(login);
-            if (userRolesInfo is null || !Common.Security.VerifyPassword(userRolesInfo.Password, login.Password))
+            UserWithRolesNameDto userRolesInfo = await ReadService.GetAuthentocateDataAsync(login);
+            if (userRolesInfo is null || !Common.Security.VerifyPassword(login.Password, userRolesInfo.Password))
                 throw new Exception("User or password is incorrect");
             if (userRolesInfo.Roles is null || userRolesInfo.Roles.Count == 0)
                 throw new Exception("User is not authorized");
@@ -92,6 +92,7 @@ namespace BirthdayDashing.API.Controllers
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status403Forbidden)]
         [HttpGet("{id}")]
         public async Task<ActionResult<Feedback<UserDto>>> Get(Guid id)
         {
@@ -106,6 +107,7 @@ namespace BirthdayDashing.API.Controllers
         [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status415UnsupportedMediaType)]
         [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status413RequestEntityTooLarge)]
         [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status403Forbidden)]
         [HttpPost("UserProfilePicture")]
         public async Task<ActionResult<Feedback<string>>> UploadUserProfilePicture([ImageValidator(5242880, "jpg|jpeg|png|bmp|tif|gif")] IFormFile picture)
         {
@@ -114,6 +116,8 @@ namespace BirthdayDashing.API.Controllers
 
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status404NotFound)]
         [HttpPut("{id}")]
         public async Task<ActionResult<Feedback<bool>>> Update(Guid id, [FromBody] UpdateUserDto user)
         {

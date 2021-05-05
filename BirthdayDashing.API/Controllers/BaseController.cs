@@ -1,4 +1,5 @@
-﻿using Common.Feedback;
+﻿using BirthdayDashing.Domain;
+using Common.Feedback;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -7,7 +8,7 @@ using System.Net.Mime;
 
 namespace BirthdayDashing.API.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = Role.AdminOrUser)]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status400BadRequest)]

@@ -7,7 +7,7 @@ namespace Common
         {
             return BC.HashPassword(Password);
         }
-        public static bool VerifyPassword(string HashPassword,string Password)
+        public static bool VerifyPassword(string Password, string HashPassword)
         {
             return BC.Verify(Password, HashPassword);
         }

@@ -6,6 +6,7 @@ namespace BirthdayDashing.Domain
     {
         public const string Admin = "Administrator";
         public const string User = "User";
+        public const string AdminOrUser = "Administrator, User";
 
         /// <summary>
         /// just for Mapping

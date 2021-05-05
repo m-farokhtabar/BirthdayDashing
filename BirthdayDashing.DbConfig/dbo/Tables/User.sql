@@ -1,7 +1,7 @@
 ﻿CREATE TABLE [dbo].[User] (
     [Id]          UNIQUEIDENTIFIER NOT NULL,
     [Email]       NVARCHAR (100)   NOT NULL,
-    [Password]    CHAR (64)        NOT NULL,
+    [Password]    VARCHAR (64)     NOT NULL,
     [Birthday]    DATETIME2 (7)    NOT NULL,
     [PostalCode]  NVARCHAR (20)    NOT NULL,
     [FirstName]   NVARCHAR (50)    NULL,
@@ -12,6 +12,10 @@
     [RowVersion]  ROWVERSION       NOT NULL,
     CONSTRAINT [PK_User] PRIMARY KEY CLUSTERED ([Id] ASC)
 );
+
+
+
+
 
 
 
