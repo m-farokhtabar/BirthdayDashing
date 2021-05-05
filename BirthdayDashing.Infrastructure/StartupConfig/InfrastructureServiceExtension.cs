@@ -10,7 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace BirthdayDashing.Infrastructure.StartupConfig
 {
-    public static class InfrastructureServiceExtention
+    public static class InfrastructureServiceExtension
     {
         public static void ConfigureDataAccess(this IServiceCollection services,string ConnectionString)
         {

@@ -5,6 +5,7 @@ using BirthdayDashing.Application.Dtos.Users.Input;
 using BirthdayDashing.Application.Dtos.Users.Output;
 using BirthdayDashing.Application.Requests.Read.Users;
 using BirthdayDashing.Application.Requests.Write.Users;
+using Common.Feedback;
 using Common.Validation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
@@ -21,12 +22,8 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace BirthdayDashing.API.Controllers
-{
-    [Authorize]
-    [Produces(MediaTypeNames.Application.Json)]
-    [Route("api/[controller]")]
-    [ApiController]    
-    public class AccountController : Controller
+{    
+    public class AccountController : BaseController
     {
         private readonly IUserWriteService WriteService;
         private readonly IUserReadService ReadService;
@@ -41,29 +38,35 @@ namespace BirthdayDashing.API.Controllers
         }
 
         [AllowAnonymous]
-        [Consumes(MediaTypeNames.Application.Json)]
+        [Consumes(MediaTypeNames.Application.Json)]        
+        [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status409Conflict)]
         [HttpPost]
-        public async Task<Boolean> Register([FromBody] AddUserDto user)
+        public async Task<ActionResult<Feedback<bool>>> Register([FromBody] AddUserDto user)
         {
             await WriteService.AddAsync(user);
-            return true;
+            return Ok(true);
         }
-
+        
         [AllowAnonymous]
         [Consumes(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status404NotFound)]        
         [HttpPost("ConfirmByEmail")]
-        public async Task ConfirmByEmail(ConfirmUserDto confirmUser)
+        public async Task<ActionResult<Feedback<bool>>> ConfirmByEmail(ConfirmUserDto confirmUser)
         {
             await WriteService.ConfirmByEmailAsync(confirmUser);
+            return Ok(true);
         }
 
+        
         [AllowAnonymous]
-        [HttpPost("Login")]
-        public async Task<AuthenticatedUserViewMoel> Login(LoginDto login)
+        [Consumes(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status404NotFound)]
+        [HttpPost("Login")]        
+        public async Task<ActionResult<Feedback<AuthenticatedUserViewMoel>>> Login(LoginDto login)
         {
             var userRolesInfo = await ReadService.GetAuthentocateDataAsync(login);
-            if (userRolesInfo is null)
-                throw new Exception("User is not found");
+            if (userRolesInfo is null || !Common.Security.VerifyPassword(userRolesInfo.Password, login.Password))
+                throw new Exception("User or password is incorrect");
             if (userRolesInfo.Roles is null || userRolesInfo.Roles.Count == 0)
                 throw new Exception("User is not authorized");
 
@@ -83,29 +86,39 @@ namespace BirthdayDashing.API.Controllers
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
 
-            return new AuthenticatedUserViewMoel() { Id = userRolesInfo.Id, Token = tokenHandler.WriteToken(token) };            
-        }  
+            return Ok(new AuthenticatedUserViewMoel() { Id = userRolesInfo.Id, Token = tokenHandler.WriteToken(token) });
+        }
         
+        [Consumes(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status401Unauthorized)]
         [HttpGet("{id}")]
-        public async Task<UserDto> Get(Guid id)
+        public async Task<ActionResult<Feedback<UserDto>>> Get(Guid id)
         {
             //TODO: Only allow admins to access other user records
             //var currentUserId = int.Parse(User.Identity.Name);
             //if (id != currentUserId && !User.IsInRole(Role.Admin))
             //    return Forbid();
 
-            return await ReadService.Get(id);        
-        }        
+            return Ok(await ReadService.Get(id));
+        }
+        
+        [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status415UnsupportedMediaType)]
+        [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status413RequestEntityTooLarge)]
+        [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status401Unauthorized)]
         [HttpPost("UserProfilePicture")]
-        public async Task<string> UploadUserProfilePicture([ImageValidator(5242880, "jpg|jpeg|png|bmp|tif|gif")] IFormFile picture)
+        public async Task<ActionResult<Feedback<string>>> UploadUserProfilePicture([ImageValidator(5242880, "jpg|jpeg|png|bmp|tif|gif")] IFormFile picture)
         {
-            return await (new ManageFiles(Host)).Save(picture, "User", "UserProfileImage");
-        }                
+            return Ok(await (new ManageFiles(Host)).Save(picture, "User", "UserProfileImage"));
+        }
+
         [Consumes(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status401Unauthorized)]
         [HttpPut("{id}")]
-        public async Task Update(Guid id, [FromBody] UpdateUserDto user)
+        public async Task<ActionResult<Feedback<bool>>> Update(Guid id, [FromBody] UpdateUserDto user)
         {
             await WriteService.UpdateAsync(id, user);
+            return Ok(true);
         }
     }
 }

@@ -8,7 +8,7 @@ namespace BirthdayDashing.API.StartupConfig
     /// <summary>
     /// configure the HTTP request pipeline
     /// </summary>
-    public static class ApplicationBuilderExtention
+    public static class ApplicationBuilderExtension
     {
         public static void UseSwashBuckleSwagger(this IApplicationBuilder app)
         {

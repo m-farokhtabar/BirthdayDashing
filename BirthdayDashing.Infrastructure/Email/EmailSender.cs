@@ -1,9 +1,9 @@
 ﻿using BirthdayDashing.Application.Email;
+using System;
 using System.Net;
 using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
-using System;
 
 namespace BirthdayDashing.Infrastructure.Email
 {

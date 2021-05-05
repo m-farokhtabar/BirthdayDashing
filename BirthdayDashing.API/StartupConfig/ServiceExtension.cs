@@ -17,7 +17,7 @@ namespace BirthdayDashing.API.StartupConfig
     /// <summary>
     /// Startup Configure Services
     /// </summary>
-    public static class ServiceExtention
+    public static class ServiceExtension
     {
         public static void ConfigureSwashBuckleSwagger(this IServiceCollection services)
         {

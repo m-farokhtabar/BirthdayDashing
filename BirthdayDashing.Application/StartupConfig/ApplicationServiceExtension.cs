@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace BirthdayDashing.Application.StartupConfig
 {
-    public static class ApplicationServiceExtention
+    public static class ApplicationServiceExtension
     {
         public static void ConfigureServices(this IServiceCollection services)
         {
