@@ -1,4 +1,5 @@
-﻿using Common.Extension;
+﻿using Common.Extensions;
+using System.Text.Json;
 
 namespace Common.Feedback
 {
@@ -8,38 +9,26 @@ namespace Common.Feedback
     /// <typeparam name="T">Output Value of an action</typeparam>
     public class Feedback<T>
     {
-        public Feedback(FeedbackType status, MessageType messageType, T value, string message = "", string exceptionMessage = "")
+        public Feedback(T value, MessageType messageType, string message = "", string[] parameters = null)
         {
-            SetFeedBack(status, messageType, value, message, exceptionMessage);
-        }
-        private FeedbackType _Status;
-        public FeedbackType Status
-        {
-            get
-            {
-                return _Status;
-            }
-            private set
-            {
-                _Status = value;
-                if (value != FeedbackType.OperationFailed)
-                    Message = value.GetDisplayNameOfEnum();
-            }
+            SetFeedBack(value, messageType, message, parameters);
         }
         public MessageType MessageType { get; private set; }
         public T Value { get; private set; }
         public string Message { get; private set; }
-        public string ExceptionMessage { get; private set; }
+        public string[] Parameters { get; private set; }
 
-        public void SetFeedBack(FeedbackType status, MessageType messageType, T value, string message = "", string exceptionMessage = "")
+        public void SetFeedBack(T value, MessageType messageType, string message = "", string[] parameters = null)
         {
-            Status = status;
-            MessageType = messageType;
             Value = value;
-            ExceptionMessage = exceptionMessage;
-            if (Status == FeedbackType.OperationFailed)
-                Message = message;
-            Message = Message.Replace("{0}", message);
+            MessageType = messageType;            
+            Parameters = parameters;
+            Message = message;
+        }
+        public override string ToString()
+        {
+            return JsonSerializer.Serialize(this);
+
         }
     }
 }

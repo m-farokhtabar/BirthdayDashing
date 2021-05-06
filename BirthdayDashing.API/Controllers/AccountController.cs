@@ -5,6 +5,7 @@ using BirthdayDashing.Application.Dtos.Users.Input;
 using BirthdayDashing.Application.Dtos.Users.Output;
 using BirthdayDashing.Application.Requests.Read.Users;
 using BirthdayDashing.Application.Requests.Write.Users;
+using Common.Exception;
 using Common.Feedback;
 using Common.Validation;
 using Microsoft.AspNetCore.Authorization;
@@ -20,9 +21,10 @@ using System.Net.Mime;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using static Common.Exception.Messages;
 
 namespace BirthdayDashing.API.Controllers
-{    
+{
     public class AccountController : BaseController
     {
         private readonly IUserWriteService WriteService;
@@ -38,7 +40,7 @@ namespace BirthdayDashing.API.Controllers
         }
 
         [AllowAnonymous]
-        [Consumes(MediaTypeNames.Application.Json)]        
+        [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status409Conflict)]
         [HttpPost]
         public async Task<ActionResult<Feedback<bool>>> Register([FromBody] AddUserDto user)
@@ -46,7 +48,7 @@ namespace BirthdayDashing.API.Controllers
             await WriteService.AddAsync(user);
             return Ok(true);
         }
-        
+
         [AllowAnonymous]
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status404NotFound)]
@@ -57,18 +59,20 @@ namespace BirthdayDashing.API.Controllers
             return Ok(true);
         }
 
-        
+
         [AllowAnonymous]
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status404NotFound)]
-        [HttpPost("Login")]        
+        [HttpPost("Login")]
         public async Task<ActionResult<Feedback<AuthenticatedUserViewMoel>>> Login(LoginDto login)
         {
             UserWithRolesNameDto userRolesInfo = await ReadService.GetAuthentocateDataAsync(login);
             if (userRolesInfo is null || !Common.Security.VerifyPassword(login.Password, userRolesInfo.Password))
-                throw new Exception("User or password is incorrect");
+                throw new ManualException(DATA_IS_INCORRECT.Replace("{0}", "User or password"), ExceptionType.NotFound, new string[] { nameof(login.Email), nameof(login.Password) });
+            if (!userRolesInfo.IsApproved)
+                throw new ManualException(USER_IS_NOT_APPROVED, ExceptionType.UnAuthorized);
             if (userRolesInfo.Roles is null || userRolesInfo.Roles.Count == 0)
-                throw new Exception("User is not authorized");
+                throw new ManualException(USER_IS_NOT_AUTHORIZED, ExceptionType.UnAuthorized);
 
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(AppSettings.SigningKey);
@@ -88,7 +92,7 @@ namespace BirthdayDashing.API.Controllers
 
             return Ok(new AuthenticatedUserViewMoel() { Id = userRolesInfo.Id, Token = tokenHandler.WriteToken(token) });
         }
-        
+
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status401Unauthorized)]
@@ -103,7 +107,7 @@ namespace BirthdayDashing.API.Controllers
 
             return Ok(await ReadService.Get(id));
         }
-        
+
         [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status415UnsupportedMediaType)]
         [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status413RequestEntityTooLarge)]
         [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status401Unauthorized)]

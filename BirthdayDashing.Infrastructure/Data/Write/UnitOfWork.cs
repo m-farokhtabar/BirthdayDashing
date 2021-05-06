@@ -1,5 +1,4 @@
 ﻿using BirthdayDashing.Domain.Data;
-using System;
 
 namespace BirthdayDashing.Infrastructure.Data.Write
 {
@@ -19,7 +18,7 @@ namespace BirthdayDashing.Infrastructure.Data.Write
             catch
             {
                 RollBackTrans();
-                throw new Exception("Data was not saved");
+                throw;
             }
             finally
             {

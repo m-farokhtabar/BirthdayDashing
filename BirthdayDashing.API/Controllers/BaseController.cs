@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using System.Net.Mime;
+using static Common.Exception.Messages;
 
 namespace BirthdayDashing.API.Controllers
 {
@@ -19,7 +20,7 @@ namespace BirthdayDashing.API.Controllers
     {
         public override OkObjectResult Ok([ActionResultObjectValue] object value)
         {
-            return base.Ok(new Feedback<object>(FeedbackType.DoneSuccessfully, MessageType.Info, value));
+            return base.Ok(new Feedback<object>(value, MessageType.Success, THE_OPERATION_WAS_DONE_SUCCESSFULLY));
         }
     }
 }

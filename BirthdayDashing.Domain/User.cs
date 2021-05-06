@@ -1,8 +1,10 @@
 ﻿using BirthdayDashing.Domain.Base;
 using Common;
+using Common.Exception;
 using Common.Validation;
 using System;
 using System.Collections.Generic;
+using static Common.Exception.Messages;
 
 namespace BirthdayDashing.Domain
 {
@@ -15,7 +17,7 @@ namespace BirthdayDashing.Domain
         {
 
         }
-        public User(string email, string password, string postalCode, DateTime birthday,Guid RoleId, string firstName = null, string lastName = null, string phoneNumber = null, string imageUrl = null)
+        public User(string email, string password, string postalCode, DateTime birthday, Guid RoleId, string firstName = null, string lastName = null, string phoneNumber = null, string imageUrl = null)
         {
             Validate(nameof(Email), email, Validator.EmailIsValid);
             Validate(nameof(Password), password, Validator.StringIsNotNullOrWhiteSpace);
@@ -30,7 +32,7 @@ namespace BirthdayDashing.Domain
             LastName = lastName;
             PhoneNumber = phoneNumber;
             ImageUrl = imageUrl;
-            userRoles = new List<UserRole>() { new UserRole(Id, RoleId) { } };            
+            userRoles = new List<UserRole>() { new UserRole(Id, RoleId) { } };
             IsApproved = false;
         }
         public void Update(string postalCode, DateTime birthday, string firstName, string lastName, string phoneNumber, string imageUrl)
@@ -45,7 +47,7 @@ namespace BirthdayDashing.Domain
             PhoneNumber = phoneNumber;
             ImageUrl = imageUrl;
         }
-        public void UpdatePassword(string newPassword,string oldPassword)
+        public void UpdatePassword(string newPassword, string oldPassword)
         {
             if (Security.VerifyPassword(oldPassword, Password))
             {
@@ -53,7 +55,7 @@ namespace BirthdayDashing.Domain
                 Password = Security.HashPassword(newPassword);
             }
             else
-                throw new Exception("Password is wrong");
+                throw new ManualException(DATA_IS_WRONG.Replace("{0}", nameof(Password)), ExceptionType.InValid, new string[] { nameof(Password) });
         }
         public void Approved()
         {

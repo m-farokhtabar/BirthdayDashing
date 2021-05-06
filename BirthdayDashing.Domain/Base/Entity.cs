@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Common.Exception;
+using System;
 
 namespace BirthdayDashing.Domain.Base
 {
@@ -8,7 +9,7 @@ namespace BirthdayDashing.Domain.Base
         protected void Validate<T>(in string propertyName, T value, Func<T, bool> isValid)
         {
             if (!isValid.Invoke(value))
-                throw new Exception($"{propertyName} is not valid");
+                throw new ManualException($"{propertyName} is not valid", ExceptionType.InValid, new string[] { propertyName });
         }
     }
 }

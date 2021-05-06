@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Reflection;
 
-namespace Common.Extension
+namespace Common.Extensions
 {
     public static class EnumExtension {
         public static string GetDisplayNameOfEnum(this Enum value)
