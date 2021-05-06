@@ -5,6 +5,7 @@ using BirthdayDashing.Application.Dtos.Users.Input;
 using BirthdayDashing.Application.Dtos.Users.Output;
 using BirthdayDashing.Application.Requests.Read.Users;
 using BirthdayDashing.Application.Requests.Write.Users;
+using BirthdayDashing.Application.Requests.Write.VerificationCodes;
 using Common.Exception;
 using Common.Feedback;
 using Common.Validation;
@@ -16,6 +17,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Mime;
 using System.Security.Claims;
@@ -30,12 +32,14 @@ namespace BirthdayDashing.API.Controllers
         private readonly IUserWriteService WriteService;
         private readonly IUserReadService ReadService;
         private readonly IWebHostEnvironment Host;
+        private readonly IVerificationCodeWriteService VerificationCodeWriteService;
         private readonly AppSettings AppSettings;
-        public AccountController(IUserWriteService writeService, IUserReadService readService, IWebHostEnvironment host, IOptions<AppSettings> appSettings)
+        public AccountController(IUserWriteService writeService, IUserReadService readService, IWebHostEnvironment host, IOptions<AppSettings> appSettings, IVerificationCodeWriteService verificationCodeWriteService)
         {
             WriteService = writeService;
             ReadService = readService;
             Host = host;
+            VerificationCodeWriteService = verificationCodeWriteService;
             AppSettings = appSettings.Value;
         }
 
@@ -46,6 +50,15 @@ namespace BirthdayDashing.API.Controllers
         public async Task<ActionResult<Feedback<bool>>> Register([FromBody] AddUserDto user)
         {
             await WriteService.AddAsync(user);
+            return Ok(true);
+        }
+        [AllowAnonymous]
+        [Consumes(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status404NotFound)]
+        [HttpPost("ReSendConfirmEmail")]
+        public async Task<ActionResult<Feedback<bool>>> ReSendConfirmEmail([FromBody] ReSendConfirmEmailDto confirmEmail)
+        {
+            await VerificationCodeWriteService.NewAsync(confirmEmail);
             return Ok(true);
         }
 
@@ -60,13 +73,14 @@ namespace BirthdayDashing.API.Controllers
         }
 
 
+
         [AllowAnonymous]
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status404NotFound)]
         [HttpPost("Login")]
         public async Task<ActionResult<Feedback<AuthenticatedUserViewMoel>>> Login(LoginDto login)
         {
-            UserWithRolesNameDto userRolesInfo = await ReadService.GetAuthentocateDataAsync(login);
+            UserWithRolesNameDto userRolesInfo = await ReadService.GetAuthentocateDataByEmailAsync(login.Email);
             if (userRolesInfo is null || !Common.Security.VerifyPassword(login.Password, userRolesInfo.Password))
                 throw new ManualException(DATA_IS_INCORRECT.Replace("{0}", "User or password"), ExceptionType.NotFound, new string[] { nameof(login.Email), nameof(login.Password) });
             if (!userRolesInfo.IsApproved)
@@ -105,15 +119,13 @@ namespace BirthdayDashing.API.Controllers
             //if (id != currentUserId && !User.IsInRole(Role.Admin))
             //    return Forbid();
 
-            return Ok(await ReadService.Get(id));
+            return Ok(await ReadService.GetAsync(id));
         }
 
-        [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status415UnsupportedMediaType)]
-        [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status413RequestEntityTooLarge)]
         [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status403Forbidden)]
         [HttpPost("UserProfilePicture")]
-        public async Task<ActionResult<Feedback<string>>> UploadUserProfilePicture([ImageValidator(5242880, "jpg|jpeg|png|bmp|tif|gif")] IFormFile picture)
+        public async Task<ActionResult<Feedback<string>>> UploadUserProfilePicture([Required][ImageValidator(5242880, "jpg|jpeg|png|bmp|tif|gif")] IFormFile picture)
         {
             return Ok(await (new ManageFiles(Host)).Save(picture, "User", "UserProfileImage"));
         }

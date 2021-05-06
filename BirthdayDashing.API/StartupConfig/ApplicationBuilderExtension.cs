@@ -1,5 +1,4 @@
-﻿using BirthdayDashing.Domain;
-using BirthdayDashing.Infrastructure.Data.Write;
+﻿using BirthdayDashing.Infrastructure.Data.Write;
 using Common.Exception;
 using Common.Feedback;
 using Microsoft.AspNetCore.Builder;

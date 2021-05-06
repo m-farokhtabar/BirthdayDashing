@@ -1,5 +1,5 @@
 ﻿using BirthdayDashing.Application.Dtos.Users.Input;
-using BirthdayDashing.Application.Email;
+using BirthdayDashing.Application.Requests.Emails;
 using BirthdayDashing.Application.Requests.Read.Roles;
 using BirthdayDashing.Domain;
 using BirthdayDashing.Domain.Data;
@@ -17,17 +17,15 @@ namespace BirthdayDashing.Application.Requests.Write.Users
         private readonly IUnitOfWork UnitOfWork;
         private readonly IUserRepository Repository;
         private readonly IVerificationCodeRepository VerificationCodeRepository;
-        private readonly IEmailSender EmailSender;
-        private readonly IEmailTemplateProvider TemplateProvider;
+        private readonly IEmailService EmailService;
         private readonly IRoleReadService RoleReadService;
 
-        public UserWriteService(IUnitOfWork unitOfWork, IUserRepository repository, IVerificationCodeRepository verificationCodeRepository, IEmailSender emailSender, IEmailTemplateProvider templateProvider, IRoleReadService roleReadService)
+        public UserWriteService(IUnitOfWork unitOfWork, IUserRepository repository, IVerificationCodeRepository verificationCodeRepository, IEmailService emailService, IRoleReadService roleReadService)
         {
             UnitOfWork = unitOfWork;
             Repository = repository;
             VerificationCodeRepository = verificationCodeRepository;
-            EmailSender = emailSender;
-            TemplateProvider = templateProvider;
+            EmailService = emailService;
             RoleReadService = roleReadService;
         }
         public async Task AddAsync(AddUserDto user)
@@ -37,7 +35,7 @@ namespace BirthdayDashing.Application.Requests.Write.Users
             if (UserRoleId is null || UserRoleId.HasValue == false)
                 throw new ManualException(THERE_ARE_ANY_DATA_TO_ASSIGN.Replace("{0}", "Roles"), ExceptionType.NotFound);
             User entity = new(user.Email, user.Password, user.PostalCode, user.Birthday, UserRoleId.Value, user.FirstName, user.LastName);
-            VerificationCode VerificationCodeEntity = new(entity.Id, EmailSender.Setting.ConfirmEmailExpireTimeInMinute);
+            VerificationCode VerificationCodeEntity = new(entity.Id, EmailService.GetConfirmEmailExpireTimeInMinute());
             try
             {
                 await Repository.AddAsync(entity);
@@ -48,8 +46,8 @@ namespace BirthdayDashing.Application.Requests.Write.Users
             {
                 UnitOfWork.RollBack();
                 throw;
-            }
-            await SendConfirmEmail(entity, VerificationCodeEntity);
+            }            
+            await EmailService.SendConfirmEmail(new SendConfirmEmailDto() { UserId = entity.Id, Email = entity.Email, Token = VerificationCodeEntity.Token });
         }
 
         public async Task ConfirmByEmailAsync(ConfirmUserDto confirmUser)
@@ -107,16 +105,6 @@ namespace BirthdayDashing.Application.Requests.Write.Users
                 UnitOfWork.RollBack();
                 throw;
             }
-        }
-
-        private async Task SendConfirmEmail(User entity, VerificationCode VerificationCodeEntity)
-        {
-            string Body = await TemplateProvider.Get(EmailSender.Setting.VerifyCodeTemplateName[0]);
-            string Subject = EmailSender.Setting.VerifyCodeTemplateName[1];
-            string ConfirmPageUrl = EmailSender.HostAddresses.BaseUrl + EmailSender.Setting.ConfirmPageUrl.Replace("{0}", entity.Id.ToString()).Replace("{1}", entity.Email).Replace("{2}", VerificationCodeEntity.Token);
-            Body = Body.Replace("{0}", VerificationCodeEntity.Token).Replace("{1}", ConfirmPageUrl);
-
-            await EmailSender.SendEmailAsync(entity.Email, Subject, Body);
         }
     }
 }
