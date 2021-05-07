@@ -1,5 +1,4 @@
-﻿using BirthdayDashing.Domain;
-using BirthdayDashing.Domain.Repository;
+﻿using BirthdayDashing.Domain.VerificationCodes;
 using BirthdayDashing.Infrastructure.Data.Write;
 using BirthdayDashing.Infrastructure.Repository.Base;
 using Dapper;

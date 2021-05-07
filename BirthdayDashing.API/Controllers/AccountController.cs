@@ -3,9 +3,9 @@ using BirthdayDashing.API.StartupConfig;
 using BirthdayDashing.API.ViewModel;
 using BirthdayDashing.Application.Dtos.Users.Input;
 using BirthdayDashing.Application.Dtos.Users.Output;
-using BirthdayDashing.Application.Requests.Read.Users;
-using BirthdayDashing.Application.Requests.Write.Users;
-using BirthdayDashing.Application.Requests.Write.VerificationCodes;
+using BirthdayDashing.Application.Dtos.VerficationCodes.Input;
+using BirthdayDashing.Application.Users;
+using BirthdayDashing.Application.VerificationCodes;
 using Common.Exception;
 using Common.Feedback;
 using Common.Validation;
@@ -45,7 +45,6 @@ namespace BirthdayDashing.API.Controllers
 
         [AllowAnonymous]
         [Consumes(MediaTypeNames.Application.Json)]
-        [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status409Conflict)]
         [HttpPost]
         public async Task<ActionResult<Feedback<bool>>> Register([FromBody] AddUserDto user)
         {
@@ -55,21 +54,17 @@ namespace BirthdayDashing.API.Controllers
         
         [AllowAnonymous]
         [Consumes(MediaTypeNames.Application.Json)]
-        [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status409Conflict)]
         [HttpPost("ReSendConfirmEmail")]
         public async Task<ActionResult<Feedback<bool>>> ReSendConfirmEmail([FromBody] ReSendConfirmEmailDto confirmEmail)
         {
-            await VerificationCodeWriteService.NewAsync(confirmEmail);
+            await VerificationCodeWriteService.NewCodeForConfirmEmailAsync(confirmEmail);
             return Ok(true);
         }
         
         [AllowAnonymous]
         [Consumes(MediaTypeNames.Application.Json)]
-        [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status409Conflict)]
         [HttpPost("ConfirmByEmail")]
-        public async Task<ActionResult<Feedback<bool>>> ConfirmByEmail(ConfirmUserDto confirmUser)
+        public async Task<ActionResult<Feedback<bool>>> ConfirmByEmail(ConfirmUserByEmailDto confirmUser)
         {
             await WriteService.ConfirmByEmailAsync(confirmUser);
             return Ok(true);
@@ -77,8 +72,6 @@ namespace BirthdayDashing.API.Controllers
         
         [AllowAnonymous]
         [Consumes(MediaTypeNames.Application.Json)]
-        [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status401Unauthorized)]
         [HttpPost("Login")]
         public async Task<ActionResult<Feedback<AuthenticatedUserViewModel>>> Login(LoginDto login)
         {
@@ -125,19 +118,13 @@ namespace BirthdayDashing.API.Controllers
 
         [AllowAnonymous]
         [Consumes(MediaTypeNames.Application.Json)]
-        [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status404NotFound)]
-        [HttpPut("ForgetPassword/{id}")]
-        public async Task<ActionResult<Feedback<bool>>> ForgetPassword(Guid id, [FromBody] ForgetPasswordDto forgetPassword)
+        [HttpPost("ForgetPassword")]
+        public async Task<ActionResult<Feedback<bool>>> ForgotPassword([FromBody] ForgotPasswordDto forgetPassword)
         {
+            await VerificationCodeWriteService.NewCodeForForgotPasswordAsync(forgetPassword);
             return Ok(true);
         }
-
-
-        [Consumes(MediaTypeNames.Application.Json)]        
-        [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status403Forbidden)]
+        [Consumes(MediaTypeNames.Application.Json)]
         [HttpGet("{id}")]        
         public async Task<ActionResult<Feedback<UserDto>>> Get(Guid id)
         {
@@ -149,8 +136,6 @@ namespace BirthdayDashing.API.Controllers
             return Ok(await ReadService.GetAsync(id));
         }
         
-        [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status403Forbidden)]
         [HttpPost("UserProfilePicture")]        
         public async Task<ActionResult<Feedback<string>>> UploadUserProfilePicture([Required][ImageValidator(5242880, "jpg|jpeg|png|bmp|tif|gif")] IFormFile picture)
         {
@@ -158,9 +143,6 @@ namespace BirthdayDashing.API.Controllers
         }        
         
         [Consumes(MediaTypeNames.Application.Json)]
-        [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status404NotFound)]
         [HttpPut("{id}")]
         public async Task<ActionResult<Feedback<bool>>> Update(Guid id, [FromBody] UpdateUserDto user)
         {
@@ -169,13 +151,18 @@ namespace BirthdayDashing.API.Controllers
         }
 
         [Consumes(MediaTypeNames.Application.Json)]
-        [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status404NotFound)]
         [HttpPut("ChangePassword/{id}")]
         public async Task<ActionResult<Feedback<bool>>> ChangePassword(Guid id, [FromBody] ChangePasswordDto password)
         {
             await WriteService.ChangePasswordAsync(id, password);
+            return Ok(true);
+        }
+
+        [Consumes(MediaTypeNames.Application.Json)]
+        [HttpPut("ResetPassword/{id}")]
+        public async Task<ActionResult<Feedback<bool>>> ResetPassword(Guid id, [FromBody] ResetPasswordDto password)
+        {
+            await WriteService.ResetPasswordAsync(id, password);
             return Ok(true);
         }
     }

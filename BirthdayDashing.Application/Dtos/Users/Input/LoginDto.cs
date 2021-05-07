@@ -6,6 +6,7 @@ namespace BirthdayDashing.Application.Dtos.Users.Input
     {
         [Required]
         [MaxLength(100)]
+        [EmailAddress]
         public string Email { get; set; }
         [Required]
         [MaxLength(100)]

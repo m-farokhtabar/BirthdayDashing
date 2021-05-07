@@ -1,5 +1,5 @@
 ﻿using BirthdayDashing.API.Helper;
-using BirthdayDashing.Application.Email;
+using BirthdayDashing.Application.Configuration.Email;
 using BirthdayDashing.Infrastructure.StartupConfig;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;

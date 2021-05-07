@@ -1,6 +1,6 @@
 using BirthdayDashing.API.Helper;
 using BirthdayDashing.API.StartupConfig;
-using BirthdayDashing.Application.StartupConfig;
+using BirthdayDashing.Application.Configuration.StartupConfig;
 using BirthdayDashing.Infrastructure.Data.Write;
 using BirthdayDashing.Infrastructure.StartupConfig;
 using Microsoft.AspNetCore.Builder;

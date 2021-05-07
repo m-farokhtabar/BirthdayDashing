@@ -1,4 +1,4 @@
-﻿using BirthdayDashing.Domain;
+﻿using BirthdayDashing.Domain.Roles;
 using Common.Feedback;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -11,9 +11,13 @@ namespace BirthdayDashing.API.Controllers
 {
     [Authorize(Roles = Role.AdminOrUser)]
     [Produces(MediaTypeNames.Application.Json)]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status200OK)]    
     [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status409Conflict)]    
     [Route("api/[controller]")]
     [ApiController]
     public class BaseController : ControllerBase

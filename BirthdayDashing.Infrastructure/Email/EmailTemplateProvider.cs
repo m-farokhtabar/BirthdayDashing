@@ -1,4 +1,4 @@
-﻿using BirthdayDashing.Application.Email;
+﻿using BirthdayDashing.Application.Configuration.Email;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -18,10 +18,8 @@ namespace BirthdayDashing.Infrastructure.Email
         {
             try
             {
-                using (StreamReader SourceReader = File.OpenText(Path.Combine(HostAddresses.BasePhysicalAddress, Setting.TemplatePhysicalPath, TemplateName)))
-                {
-                    return await SourceReader.ReadToEndAsync();
-                }
+                using StreamReader SourceReader = File.OpenText(Path.Combine(HostAddresses.BasePhysicalAddress, Setting.TemplatePhysicalPath, TemplateName));
+                return await SourceReader.ReadToEndAsync();
             }
             catch
             {

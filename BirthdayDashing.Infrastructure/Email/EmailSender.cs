@@ -1,4 +1,4 @@
-﻿using BirthdayDashing.Application.Email;
+﻿using BirthdayDashing.Application.Configuration.Email;
 using System.Net;
 using System.Net.Mail;
 using System.Text;
@@ -29,17 +29,15 @@ namespace BirthdayDashing.Infrastructure.Email
             };
             mailMessage.To.Add(recepient);
 
-            using (var client = new SmtpClient(Setting.Host))
+            using var client = new SmtpClient(Setting.Host);
+            client.Credentials = new NetworkCredential(Setting.UserName, Setting.Password);
+            client.Port = Setting.Port;
+            try
             {
-                client.Credentials = new NetworkCredential(Setting.UserName, Setting.Password);
-                client.Port = Setting.Port;
-                try
-                {
-                    await client.SendMailAsync(mailMessage);
-                }
-                catch
-                {
-                }
+                await client.SendMailAsync(mailMessage);
+            }
+            catch(System.Exception ex)
+            {
             }
         }
     }

@@ -1,9 +1,11 @@
-﻿using BirthdayDashing.Domain;
-using BirthdayDashing.Domain.Repository;
+﻿using BirthdayDashing.Domain.Users;
 using BirthdayDashing.Infrastructure.Data.Write;
 using BirthdayDashing.Infrastructure.Repository.Base;
 using Dapper;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace BirthdayDashing.Infrastructure.Repository
@@ -24,7 +26,31 @@ namespace BirthdayDashing.Infrastructure.Repository
 
         public async Task<User> GetAsync(Guid id)
         {
-            return await DbEntities.QueryFirstOrDefaultAsync<User>("SELECT * FROM [User] WHERE [Id]=@Id", new { id }, Transaction);
+            const string Query = "SELECT [CurrentUser].*, [UserRole].[RoleId] FROM (SELECT * FROM [User] WHERE [Id]=@Id) AS [CurrentUser] LEFT JOIN [UserRole] ON [CurrentUser].[Id] = [UserRole].[UserId]";
+
+            User CurrentUser = null;
+            List<UserRole> CurrentUserRoles = null;
+
+            var Result = (await DbEntities.QueryAsync<User, UserRole, User>(Query,
+            (User, UserRole) =>
+            {
+                if (CurrentUser == null)
+                {
+                    CurrentUser = User;
+                    CurrentUserRoles = new List<UserRole>();
+                }
+                if (UserRole != null)
+                {
+                    CurrentUserRoles.Add(new UserRole(CurrentUser.Id, UserRole.RoleId));
+                }
+                return CurrentUser;
+            },
+            splitOn: "RoleId",
+            param: new { id }, transaction: Transaction)).FirstOrDefault();
+            if (Result != null && CurrentUserRoles?.Count > 0)
+                Result.GetType().GetField("userRoles", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(Result, CurrentUserRoles);
+
+            return Result;
         }
 
         public async Task UpdateAsync(User entity)

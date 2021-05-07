@@ -1,4 +1,4 @@
-﻿using BirthdayDashing.Domain.Data;
+﻿using BirthdayDashing.Domain.SeedWork;
 
 namespace BirthdayDashing.Infrastructure.Data.Write
 {

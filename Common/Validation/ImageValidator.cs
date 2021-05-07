@@ -50,7 +50,14 @@ namespace Common.Validation
         }
         public override string FormatErrorMessage(string name)
         {
-            return base.FormatErrorMessage("Image is not valid");
+            if (!ExtentionIsValid)
+                return $"The {name} is not valid image";
+            else if (!MaxLengthIsValid)
+                return $"The {name} Size is more than {MaxFileSize / 1024} Kb";
+            else if (!RequiredIsValid)
+                return $"{name} is required";
+            else
+                return "";
         }
     }
 }

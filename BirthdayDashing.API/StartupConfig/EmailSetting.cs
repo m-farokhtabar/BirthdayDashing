@@ -1,27 +1,27 @@
-﻿using BirthdayDashing.Application.Email;
+﻿using BirthdayDashing.Application.Configuration.Email;
 
 namespace BirthdayDashing.API.StartupConfig
 {
     public class EmailSetting : IEmailSetting
     {
-        public string[] CampaignTemplateName { get; set; }
-        public string[] CommentUpdateTemplateName { get; set; }
-        public string[] DashingUpdateTempalateName { get; set; }
-        public string[] DonationTemplateName { get; set; }
-        public string[] EmailCampaignTemplateName { get; set; }
-        public string[] ForgotPasswordTemplateName { get; set; }
-        public string[] HappyBirthdayTemplateName { get; set; }
-        public string[] HappyBirthdayToTemplateName { get; set; }
-        public string[] InvitationTemplateName { get; set; }
-        public string[] NotificationTemplateName { get; set; }
-        public string[] NewDonationTemplateName { get; set; }
-        public string[] PasswordChangeTemplateName { get; set; }
-        public string[] ReferralEmailTemplateName { get; set; }
-        public string[] ResetPasswordTemplateName { get; set; }
-        public string[] ThankYouTemplateName { get; set; }
-        public string[] VerifyCodeTemplateName { get; set; }
-        public string[] WelcomeTemplateName { get; set; }
-        public string[] WelcomeNewDasherTemplateName { get; set; }
+        public string[] CampaignTemplateSetting { get; set; }
+        public string[] CommentUpdateTemplateSetting { get; set; }
+        public string[] DashingUpdateTempalateSetting { get; set; }
+        public string[] DonationTemplateSetting { get; set; }
+        public string[] EmailCampaignTemplateSetting { get; set; }
+        public string[] ForgotPasswordTemplateSetting { get; set; }
+        public string[] HappyBirthdayTemplateSetting { get; set; }
+        public string[] HappyBirthdayToTemplateSetting { get; set; }
+        public string[] InvitationTemplateSetting { get; set; }
+        public string[] NotificationTemplateSetting { get; set; }
+        public string[] NewDonationTemplateSetting { get; set; }
+        public string[] PasswordChangeTemplateSetting { get; set; }
+        public string[] ReferralEmailTemplateSetting { get; set; }
+        public string[] ResetPasswordTemplateSetting { get; set; }
+        public string[] ThankYouTemplateSetting { get; set; }
+        public string[] VerifyCodeTemplateSetting { get; set; }
+        public string[] WelcomeTemplateSetting { get; set; }
+        public string[] WelcomeNewDasherTemplateSetting { get; set; }
         public string TemplatePhysicalPath { get; set; }
         public int TempateCacheExpireInHour { get; set; }
 
@@ -30,7 +30,7 @@ namespace BirthdayDashing.API.StartupConfig
         public string Password { get; set; }
         public string Host { get; set; }
         public int Port { get; set; }
-        public string ConfirmPageUrl { get; set; }
         public int ConfirmEmailExpireTimeInMinute { get; set; }
+
     }
 }

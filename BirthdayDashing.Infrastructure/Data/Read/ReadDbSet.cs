@@ -1,4 +1,4 @@
-﻿using BirthdayDashing.Application.Data;
+﻿using BirthdayDashing.Application.Configuration.Data;
 using System;
 using System.Data;
 using System.Data.SqlClient;

@@ -1,4 +1,4 @@
-﻿using BirthdayDashing.Application.Email;
+﻿using BirthdayDashing.Application.Configuration.Email;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 namespace BirthdayDashing.API.Helper

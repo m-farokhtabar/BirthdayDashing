@@ -17,7 +17,8 @@ namespace BirthdayDashing.Application.Dtos.Users.Input
         [MaxLength(50)]
         public string PhoneNumber { get; set; }        
         [MaxLength(2048)]
-        [RegularExpression(@"^\/+.*\.(jpg|jpeg|png|bmp|tif|gif)$")]
+        //TODO: ImageUrl without url validaition maybe makes some security problems
+        //[RegularExpression(@"^\/+.*\.(jpg|jpeg|png|bmp|tif|gif)$")]
         public string ImageUrl { get; set; }
     }
 }
