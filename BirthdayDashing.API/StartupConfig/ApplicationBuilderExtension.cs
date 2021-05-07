@@ -79,7 +79,7 @@ namespace BirthdayDashing.API.StartupConfig
                         context.Response.Clear();
                         context.Response.ContentType = ContentType;
                         context.Response.StatusCode = StatusCode;
-                        Fb ??= new Feedback<bool>(false, MessageType.RuntimeError, contextFeature?.Error?.StackTrace , contextFeature?.Error?.Message);
+                        Fb ??= new Feedback<bool>(false, MessageType.RuntimeError, contextFeature?.Error?.StackTrace == null ? INTERNAL_ERROR : contextFeature?.Error?.StackTrace, contextFeature?.Error?.Message);
                         await context.Response.WriteAsync(Fb.ToString());
                     }
                 });

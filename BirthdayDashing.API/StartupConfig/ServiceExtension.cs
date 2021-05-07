@@ -75,7 +75,7 @@ namespace BirthdayDashing.API.StartupConfig
         }
         public static void ConfigureHostAddresses(this IServiceCollection services)
         {
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();            
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IHostAddresses, HostAddresses>();
         }
         public static void ConfigureEmailSetting(this IServiceCollection services, IConfiguration configuration)

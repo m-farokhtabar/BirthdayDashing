@@ -18,6 +18,7 @@ using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Mime;
 using System.Security.Claims;
@@ -34,6 +35,8 @@ namespace BirthdayDashing.API.Controllers
         private readonly IWebHostEnvironment Host;
         private readonly IVerificationCodeWriteService VerificationCodeWriteService;
         private readonly AppSettings AppSettings;
+        private Guid UserId => Guid.Parse(User.Identity.Name);
+
         public AccountController(IUserWriteService writeService, IUserReadService readService, IWebHostEnvironment host, IOptions<AppSettings> appSettings, IVerificationCodeWriteService verificationCodeWriteService)
         {
             WriteService = writeService;
@@ -51,7 +54,7 @@ namespace BirthdayDashing.API.Controllers
             await WriteService.AddAsync(user);
             return Ok(true);
         }
-        
+
         [AllowAnonymous]
         [Consumes(MediaTypeNames.Application.Json)]
         [HttpPost("ReSendConfirmEmail")]
@@ -60,7 +63,7 @@ namespace BirthdayDashing.API.Controllers
             await VerificationCodeWriteService.NewCodeForConfirmEmailAsync(confirmEmail);
             return Ok(true);
         }
-        
+
         [AllowAnonymous]
         [Consumes(MediaTypeNames.Application.Json)]
         [HttpPost("ConfirmByEmail")]
@@ -69,7 +72,7 @@ namespace BirthdayDashing.API.Controllers
             await WriteService.ConfirmByEmailAsync(confirmUser);
             return Ok(true);
         }
-        
+
         [AllowAnonymous]
         [Consumes(MediaTypeNames.Application.Json)]
         [HttpPost("Login")]
@@ -106,7 +109,7 @@ namespace BirthdayDashing.API.Controllers
             return Ok(new AuthenticatedUserViewModel()
             {
                 Id = userRolesInfo.Id,
-                Birthday = userRolesInfo.Birthday,                
+                Birthday = userRolesInfo.Birthday,
                 FirstName = userRolesInfo.FirstName,
                 LastName = userRolesInfo.LastName,
                 ImageUrl = userRolesInfo.ImageUrl,
@@ -124,40 +127,8 @@ namespace BirthdayDashing.API.Controllers
             await VerificationCodeWriteService.NewCodeForForgotPasswordAsync(forgetPassword);
             return Ok(true);
         }
-        [Consumes(MediaTypeNames.Application.Json)]
-        [HttpGet("{id}")]        
-        public async Task<ActionResult<Feedback<UserDto>>> Get(Guid id)
-        {
-            //TODO: Only allow admins to access other user records
-            //var currentUserId = int.Parse(User.Identity.Name);
-            //if (id != currentUserId && !User.IsInRole(Role.Admin))
-            //    return Forbid();
 
-            return Ok(await ReadService.GetAsync(id));
-        }
-        
-        [HttpPost("UserProfilePicture")]        
-        public async Task<ActionResult<Feedback<string>>> UploadUserProfilePicture([Required][ImageValidator(5242880, "jpg|jpeg|png|bmp|tif|gif")] IFormFile picture)
-        {
-            return Ok(await (new ManageFiles(Host)).Save(picture, "User", "UserProfileImage"));
-        }        
-        
-        [Consumes(MediaTypeNames.Application.Json)]
-        [HttpPut("{id}")]
-        public async Task<ActionResult<Feedback<bool>>> Update(Guid id, [FromBody] UpdateUserDto user)
-        {
-            await WriteService.UpdateAsync(id, user);
-            return Ok(true);
-        }
-
-        [Consumes(MediaTypeNames.Application.Json)]
-        [HttpPut("ChangePassword/{id}")]
-        public async Task<ActionResult<Feedback<bool>>> ChangePassword(Guid id, [FromBody] ChangePasswordDto password)
-        {
-            await WriteService.ChangePasswordAsync(id, password);
-            return Ok(true);
-        }
-
+        [AllowAnonymous]
         [Consumes(MediaTypeNames.Application.Json)]
         [HttpPut("ResetPassword/{id}")]
         public async Task<ActionResult<Feedback<bool>>> ResetPassword(Guid id, [FromBody] ResetPasswordDto password)
@@ -165,5 +136,38 @@ namespace BirthdayDashing.API.Controllers
             await WriteService.ResetPasswordAsync(id, password);
             return Ok(true);
         }
+        [Consumes(MediaTypeNames.Application.Json)]
+        [HttpGet]
+        public async Task<ActionResult<Feedback<UserDto>>> Get()
+        {
+            var Value = await ReadService.GetAsync(UserId);
+            if (Value != null)
+                return Ok(Value);
+            else
+                throw new ManualException(DATA_IS_NOT_FOUND.Replace("{0}", "User"), ExceptionType.NotFound, "UserId");
+        }
+
+        [HttpPost("UserProfilePicture")]
+        public async Task<ActionResult<Feedback<string>>> UploadUserProfilePicture([Required][ImageValidator(5242880, "jpg|jpeg|png|bmp|tif|gif")] IFormFile picture)
+        {
+            //TODO: Add UserId to name of file
+            return Ok(await (new ManageFiles(Host)).Save(picture, "User", "UserProfileImage"));
+        }
+
+        [Consumes(MediaTypeNames.Application.Json)]
+        [HttpPut]
+        public async Task<ActionResult<Feedback<bool>>> Update([FromBody] UpdateUserDto user)
+        {
+            await WriteService.UpdateAsync(UserId, user);
+            return Ok(true);
+        }
+
+        [Consumes(MediaTypeNames.Application.Json)]
+        [HttpPut("ChangePassword")]
+        public async Task<ActionResult<Feedback<bool>>> ChangePassword([FromBody] ChangePasswordDto password)
+        {
+            await WriteService.ChangePasswordAsync(UserId, password);
+            return Ok(true);
+        }        
     }
 }
