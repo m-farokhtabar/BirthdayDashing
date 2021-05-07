@@ -47,7 +47,7 @@ namespace BirthdayDashing.Application.Requests.Write.Users
                 UnitOfWork.RollBack();
                 throw;
             }
-            await EmailService.SendConfirmEmail(new SendConfirmEmailDto() { UserId = entity.Id, Token = VerificationCodeEntity.Token });
+            await EmailService.SendConfirmEmail(new SendConfirmEmailDto() { UserId = entity.Id, Email = entity.Email, Token = VerificationCodeEntity.Token });
         }
         public async Task ConfirmByEmailAsync(ConfirmUserDto confirmUser)
         {
@@ -55,7 +55,7 @@ namespace BirthdayDashing.Application.Requests.Write.Users
             if (entity is null)
                 throw new ManualException(DATA_IS_NOT_FOUND.Replace("{0}", "User"), ExceptionType.NotFound, nameof(confirmUser.UserId));
             if (entity.UserRoles is null || entity.UserRoles.Count == 0)
-                    throw new ManualException(USER_IS_NOT_AUTHORIZED, ExceptionType.UnAuthorized, "Role");
+                throw new ManualException(USER_IS_NOT_AUTHORIZED, ExceptionType.UnAuthorized, "Role");
             if (entity.IsApproved)
                 throw new ManualException(DATA_IS_ALREADY_APPROVED.Replace("{0}", "User"), ExceptionType.Conflict, nameof(entity.IsApproved));
 
