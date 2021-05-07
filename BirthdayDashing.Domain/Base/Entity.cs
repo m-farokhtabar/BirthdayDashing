@@ -9,7 +9,7 @@ namespace BirthdayDashing.Domain.Base
         protected void Validate<T>(in string propertyName, T value, Func<T, bool> isValid)
         {
             if (!isValid.Invoke(value))
-                throw new ManualException($"{propertyName} is not valid", ExceptionType.InValid, new string[] { propertyName });
+                throw new ManualException($"{propertyName} is not valid", ExceptionType.InValid, propertyName);
         }
     }
 }

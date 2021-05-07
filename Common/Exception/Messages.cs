@@ -6,6 +6,7 @@
         public const string DATA_IS_WRONG = "{0} is wrong";
         public const string DATA_IS_INCORRECT = "{0} is incorrect";
         public const string DATA_IS_ALREADY_EXIST = "{0} is already exist";
+        public const string DATA_IS_ALREADY_APPROVED = "{0} is already approved";
         public const string DATA_IS_NOT_FOUND = "{0} is not found";
         public const string THERE_ARE_ANY_DATA_TO_ASSIGN = "There are not any {0} to assign";
 

@@ -55,7 +55,7 @@ namespace BirthdayDashing.Domain
                 Password = Security.HashPassword(newPassword);
             }
             else
-                throw new ManualException(DATA_IS_WRONG.Replace("{0}", nameof(Password)), ExceptionType.InValid, new string[] { nameof(Password) });
+                throw new ManualException(DATA_IS_WRONG.Replace("{0}", nameof(Password)), ExceptionType.InValid, nameof(Password));
         }
         public void Approved()
         {

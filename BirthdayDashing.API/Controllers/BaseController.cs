@@ -20,7 +20,7 @@ namespace BirthdayDashing.API.Controllers
     {
         public override OkObjectResult Ok([ActionResultObjectValue] object value)
         {
-            return base.Ok(new Feedback<object>(value, MessageType.Success, THE_OPERATION_WAS_DONE_SUCCESSFULLY));
+            return base.Ok(new Feedback<object>(value, MessageType.Success, THE_OPERATION_WAS_DONE_SUCCESSFULLY, ""));
         }
     }
 }

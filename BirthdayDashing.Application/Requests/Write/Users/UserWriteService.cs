@@ -33,7 +33,7 @@ namespace BirthdayDashing.Application.Requests.Write.Users
             //Get Default Role for Users
             var UserRoleId = await RoleReadService.GetIdByNameAsync(Role.User);
             if (UserRoleId is null || UserRoleId.HasValue == false)
-                throw new ManualException(THERE_ARE_ANY_DATA_TO_ASSIGN.Replace("{0}", "Roles"), ExceptionType.NotFound);
+                throw new ManualException(THERE_ARE_ANY_DATA_TO_ASSIGN.Replace("{0}", "Roles"), ExceptionType.NotFound, "Role");
             User entity = new(user.Email, user.Password, user.PostalCode, user.Birthday, UserRoleId.Value, user.FirstName, user.LastName);
             VerificationCode VerificationCodeEntity = new(entity.Id, EmailService.GetConfirmEmailExpireTimeInMinute());
             try
@@ -46,45 +46,46 @@ namespace BirthdayDashing.Application.Requests.Write.Users
             {
                 UnitOfWork.RollBack();
                 throw;
-            }            
-            await EmailService.SendConfirmEmail(new SendConfirmEmailDto() { UserId = entity.Id, Email = entity.Email, Token = VerificationCodeEntity.Token });
+            }
+            await EmailService.SendConfirmEmail(new SendConfirmEmailDto() { UserId = entity.Id, Token = VerificationCodeEntity.Token });
         }
-
         public async Task ConfirmByEmailAsync(ConfirmUserDto confirmUser)
         {
             User entity = await Repository.GetAsync(confirmUser.UserId);
             if (entity is null)
-                throw new ManualException(DATA_IS_NOT_FOUND.Replace("{0}", "User"), ExceptionType.NotFound, new string[] { nameof(confirmUser.UserId) });
-            if (!entity.IsApproved)
+                throw new ManualException(DATA_IS_NOT_FOUND.Replace("{0}", "User"), ExceptionType.NotFound, nameof(confirmUser.UserId));
+            if (entity.UserRoles is null || entity.UserRoles.Count == 0)
+                    throw new ManualException(USER_IS_NOT_AUTHORIZED, ExceptionType.UnAuthorized, "Role");
+            if (entity.IsApproved)
+                throw new ManualException(DATA_IS_ALREADY_APPROVED.Replace("{0}", "User"), ExceptionType.Conflict, nameof(entity.IsApproved));
+
+            List<VerificationCode> VerificationCodeEntities = await VerificationCodeRepository.GetAsync(confirmUser.UserId, confirmUser.Token);
+            foreach (var item in VerificationCodeEntities)
             {
-                List<VerificationCode> VerificationCodeEntities = await VerificationCodeRepository.GetAsync(confirmUser.UserId, confirmUser.Token);
-                foreach (var item in VerificationCodeEntities)
+                if (item.ExpireDate.CompareTo(DateTime.Now) > 0 && item.Type == VerificationType.Email)
                 {
-                    if (item.ExpireDate.CompareTo(DateTime.Now) > 0 && item.Type == VerificationType.Email)
-                    {
-                        entity.Approved();
-                        break;
-                    }
+                    entity.Approved();
+                    break;
                 }
-                if (!entity.IsApproved)
-                    throw new ManualException(DATA_IS_NOT_VALID.Replace("{0}", "Code"), ExceptionType.InValid, new string[] { nameof(confirmUser.Token) });
-                try
-                {
-                    await Repository.UpdateIsApprovedAsync(entity);
-                    UnitOfWork.SaveChanges();
-                }
-                catch
-                {
-                    UnitOfWork.RollBack();
-                    throw;
-                }
+            }
+            if (!entity.IsApproved)
+                throw new ManualException(DATA_IS_NOT_VALID.Replace("{0}", "Code"), ExceptionType.InValid, nameof(confirmUser.Token));
+            try
+            {
+                await Repository.UpdateIsApprovedAsync(entity);
+                UnitOfWork.SaveChanges();
+            }
+            catch
+            {
+                UnitOfWork.RollBack();
+                throw;
             }
         }
         public async Task UpdateAsync(Guid id, UpdateUserDto user)
         {
             User entity = await Repository.GetAsync(id);
             if (entity is null)
-                throw new ManualException(DATA_IS_NOT_FOUND.Replace("{0}", "User"), ExceptionType.NotFound, new string[] { nameof(id) });
+                throw new ManualException(DATA_IS_NOT_FOUND.Replace("{0}", "User"), ExceptionType.NotFound, nameof(id));
             entity.Update(user.PostalCode, user.Birthday, user.FirstName, user.LastName, user.PhoneNumber, user.ImageUrl);
             await Repository.UpdateAsync(entity);
             UnitOfWork.SaveChanges();
@@ -93,7 +94,7 @@ namespace BirthdayDashing.Application.Requests.Write.Users
         {
             User entity = await Repository.GetAsync(id);
             if (entity is null)
-                throw new ManualException(DATA_IS_NOT_FOUND.Replace("{0}", "User"), ExceptionType.NotFound, new string[] { nameof(id) });
+                throw new ManualException(DATA_IS_NOT_FOUND.Replace("{0}", "User"), ExceptionType.NotFound, nameof(id));
             entity.UpdatePassword(password.NewPassword, password.OldPassword);
             try
             {

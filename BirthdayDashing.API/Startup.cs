@@ -32,7 +32,7 @@ namespace BirthdayDashing.API
             {
                 options.InvalidModelStateResponseFactory = context =>
                 {                    
-                    return new BadRequestObjectResult(new CustomBadRequest(context).ConstructErrorMessages());                    
+                    return new BadRequestObjectResult(CustomBadRequest.ConstructErrorMessages(context));
                 };
             });
             services.ConfigureSwashBuckleSwagger();

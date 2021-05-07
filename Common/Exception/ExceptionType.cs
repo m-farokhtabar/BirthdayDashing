@@ -4,6 +4,7 @@
     {
         NotFound = 404,
         InValid = 400,
-        UnAuthorized = 401
+        UnAuthorized = 401,
+        Conflict = 409
     }
 }

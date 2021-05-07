@@ -52,41 +52,47 @@ namespace BirthdayDashing.API.Controllers
             await WriteService.AddAsync(user);
             return Ok(true);
         }
+        
         [AllowAnonymous]
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status409Conflict)]
         [HttpPost("ReSendConfirmEmail")]
         public async Task<ActionResult<Feedback<bool>>> ReSendConfirmEmail([FromBody] ReSendConfirmEmailDto confirmEmail)
         {
             await VerificationCodeWriteService.NewAsync(confirmEmail);
             return Ok(true);
         }
-
+        
         [AllowAnonymous]
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status409Conflict)]
         [HttpPost("ConfirmByEmail")]
         public async Task<ActionResult<Feedback<bool>>> ConfirmByEmail(ConfirmUserDto confirmUser)
         {
             await WriteService.ConfirmByEmailAsync(confirmUser);
             return Ok(true);
         }
-
-
-
+        
         [AllowAnonymous]
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status401Unauthorized)]
         [HttpPost("Login")]
-        public async Task<ActionResult<Feedback<AuthenticatedUserViewMoel>>> Login(LoginDto login)
+        public async Task<ActionResult<Feedback<AuthenticatedUserViewModel>>> Login(LoginDto login)
         {
-            UserWithRolesNameDto userRolesInfo = await ReadService.GetAuthentocateDataByEmailAsync(login.Email);
-            if (userRolesInfo is null || !Common.Security.VerifyPassword(login.Password, userRolesInfo.Password))
-                throw new ManualException(DATA_IS_INCORRECT.Replace("{0}", "User or password"), ExceptionType.NotFound, new string[] { nameof(login.Email), nameof(login.Password) });
-            if (!userRolesInfo.IsApproved)
-                throw new ManualException(USER_IS_NOT_APPROVED, ExceptionType.UnAuthorized);
+            UserWithRolesNameDto userRolesInfo = await ReadService.GetAuthenticationDataByEmailAsync(login.Email);
+            if (userRolesInfo is null)
+                throw new ManualException(DATA_IS_INCORRECT.Replace("{0}", nameof(login.Email)), ExceptionType.NotFound, nameof(login.Email));
+            if (!Common.Security.VerifyPassword(login.Password, userRolesInfo.Password))
+                throw new ManualException(DATA_IS_INCORRECT.Replace("{0}", nameof(login.Password)), ExceptionType.NotFound, nameof(login.Password));
+
             if (userRolesInfo.Roles is null || userRolesInfo.Roles.Count == 0)
-                throw new ManualException(USER_IS_NOT_AUTHORIZED, ExceptionType.UnAuthorized);
+                throw new ManualException(USER_IS_NOT_AUTHORIZED, ExceptionType.UnAuthorized, "User");
+
+            if (!userRolesInfo.IsApproved)
+                throw new ManualException(USER_IS_NOT_APPROVED, ExceptionType.UnAuthorized, nameof(userRolesInfo.IsApproved));
 
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(AppSettings.SigningKey);
@@ -104,14 +110,35 @@ namespace BirthdayDashing.API.Controllers
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
 
-            return Ok(new AuthenticatedUserViewMoel() { Id = userRolesInfo.Id, Token = tokenHandler.WriteToken(token) });
+            return Ok(new AuthenticatedUserViewModel()
+            {
+                Id = userRolesInfo.Id,
+                Birthday = userRolesInfo.Birthday,                
+                FirstName = userRolesInfo.FirstName,
+                LastName = userRolesInfo.LastName,
+                ImageUrl = userRolesInfo.ImageUrl,
+                PhoneNumber = userRolesInfo.PhoneNumber,
+                PostalCode = userRolesInfo.PostalCode,
+                Token = tokenHandler.WriteToken(token)
+            });
         }
 
+        [AllowAnonymous]
         [Consumes(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status404NotFound)]
+        [HttpPut("ForgetPassword/{id}")]
+        public async Task<ActionResult<Feedback<bool>>> ForgetPassword(Guid id, [FromBody] ForgetPasswordDto forgetPassword)
+        {
+            return Ok(true);
+        }
+
+
+        [Consumes(MediaTypeNames.Application.Json)]        
         [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status403Forbidden)]
-        [HttpGet("{id}")]
+        [HttpGet("{id}")]        
         public async Task<ActionResult<Feedback<UserDto>>> Get(Guid id)
         {
             //TODO: Only allow admins to access other user records
@@ -121,15 +148,15 @@ namespace BirthdayDashing.API.Controllers
 
             return Ok(await ReadService.GetAsync(id));
         }
-
+        
         [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status403Forbidden)]
-        [HttpPost("UserProfilePicture")]
+        [HttpPost("UserProfilePicture")]        
         public async Task<ActionResult<Feedback<string>>> UploadUserProfilePicture([Required][ImageValidator(5242880, "jpg|jpeg|png|bmp|tif|gif")] IFormFile picture)
         {
             return Ok(await (new ManageFiles(Host)).Save(picture, "User", "UserProfileImage"));
-        }
-
+        }        
+        
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(Feedback<bool>), StatusCodes.Status403Forbidden)]

@@ -47,14 +47,14 @@ namespace BirthdayDashing.API.StartupConfig
                     int StatusCode = (int)HttpStatusCode.InternalServerError;
                     string ContentType = "application/json; charset=utf-8";
                     var contextFeature = context.Features.Get<IExceptionHandlerFeature>();
-                    if (contextFeature != null)
+                    if (contextFeature is not null)
                     {
                         Feedback<bool> Fb = null;
                         switch (contextFeature.Error)
                         {
                             case ManualException CurrentException:
                                 StatusCode = (int)CurrentException.Type;
-                                Fb = new Feedback<bool>(false, MessageType.LogicalError, CurrentException.Message, CurrentException.Parameters);
+                                Fb = new Feedback<bool>(false, MessageType.LogicalError, CurrentException.Message, CurrentException.Parameter);
                                 break;
                             case SqlException CurrentException:
                                 switch (CurrentException.Number)
@@ -65,13 +65,13 @@ namespace BirthdayDashing.API.StartupConfig
                                     case 2627:
                                         string UniqueParameterName = ManageDbExceptionUniqueAndKeyFields.FindUniqueOrKeyFieldsInMessage(CurrentException.Message);
                                         StatusCode = (int)HttpStatusCode.Conflict;
-                                        Fb = new Feedback<bool>(false, MessageType.LogicalError, DATA_IS_ALREADY_EXIST.Replace("{0}", UniqueParameterName), new string[] { UniqueParameterName });
+                                        Fb = new Feedback<bool>(false, MessageType.LogicalError, DATA_IS_ALREADY_EXIST.Replace("{0}", UniqueParameterName), UniqueParameterName);
                                         break;
                                     //There is not the primary key to use as a foreign key 
                                     case 547:
                                         string KeyParameterName = ManageDbExceptionUniqueAndKeyFields.FindUniqueOrKeyFieldsInMessage(CurrentException.Message);
                                         StatusCode = (int)HttpStatusCode.NotFound;
-                                        Fb = new Feedback<bool>(false, MessageType.LogicalError, DATA_IS_NOT_FOUND.Replace("{0}", KeyParameterName), new string[] { KeyParameterName });
+                                        Fb = new Feedback<bool>(false, MessageType.LogicalError, DATA_IS_NOT_FOUND.Replace("{0}", KeyParameterName), KeyParameterName);
                                         break;
                                 }
                                 break;
@@ -79,7 +79,7 @@ namespace BirthdayDashing.API.StartupConfig
                         context.Response.Clear();
                         context.Response.ContentType = ContentType;
                         context.Response.StatusCode = StatusCode;
-                        Fb ??= new Feedback<bool>(false, MessageType.RuntimeError, INTERNAL_ERROR);
+                        Fb ??= new Feedback<bool>(false, MessageType.RuntimeError, contextFeature?.Error?.StackTrace , contextFeature?.Error?.Message);
                         await context.Response.WriteAsync(Fb.ToString());
                     }
                 });
