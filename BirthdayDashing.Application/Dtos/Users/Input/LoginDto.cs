@@ -5,11 +5,11 @@ namespace BirthdayDashing.Application.Dtos.Users.Input
     public class LoginDto
     {
         [Required]
-        [MaxLength(100)]
+        [StringLength(100)]
         [EmailAddress]
         public string Email { get; set; }
         [Required]
-        [MaxLength(100)]
+        [StringLength(100)]
         public string Password { get; set; }
     }
 }

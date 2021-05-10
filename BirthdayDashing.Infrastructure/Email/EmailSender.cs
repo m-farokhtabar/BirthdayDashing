@@ -36,7 +36,7 @@ namespace BirthdayDashing.Infrastructure.Email
             {
                 await client.SendMailAsync(mailMessage);
             }
-            catch(System.Exception ex)
+            catch
             {
             }
         }

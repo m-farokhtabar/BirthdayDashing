@@ -90,8 +90,16 @@ namespace BirthdayDashing.Application.Users
             if (entity is null)
                 throw new ManualException(DATA_IS_NOT_FOUND.Replace("{0}", "User"), ExceptionType.NotFound, nameof(id));
             entity.Update(user.PostalCode, user.Birthday, user.FirstName, user.LastName, user.PhoneNumber, user.ImageUrl);
-            await Repository.UpdateAsync(entity);
-            UnitOfWork.SaveChanges();
+            try
+            {
+                await Repository.UpdateAsync(entity);
+                UnitOfWork.SaveChanges();
+            }
+            catch
+            {
+                UnitOfWork.RollBack();
+                throw;
+            }
         }
         public async Task ChangePasswordAsync(Guid id, ChangePasswordDto password)
         {
@@ -120,7 +128,19 @@ namespace BirthdayDashing.Application.Users
             if (!entity.IsApproved)
                 throw new ManualException(USER_IS_NOT_APPROVED, ExceptionType.UnAuthorized, nameof(entity.IsApproved));
 
-            entity.ResetPassword(password.NewPassword);
+            bool TokenIsAcceptable = false;
+            List<VerificationCode> VerificationCodeEntities = await VerificationCodeRepository.GetAsync(id, password.Token);
+            foreach (var item in VerificationCodeEntities)
+            {
+                if (item.ExpireDate.CompareTo(DateTime.Now) > 0 && item.Type == VerificationType.ForgotPasswordByEmail)
+                {
+                    entity.ResetPassword(password.NewPassword);
+                    TokenIsAcceptable = true;
+                    break;
+                }
+            }
+            if (!TokenIsAcceptable)
+                throw new ManualException(DATA_IS_NOT_VALID.Replace("{0}", "Code"), ExceptionType.InValid, nameof(password.Token));
             try
             {
                 await Repository.UpdatePasswordAsync(entity);

@@ -4,7 +4,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using System;
+using System.Linq;
 using System.Net.Mime;
+using System.Security.Claims;
 using static Common.Exception.Messages;
 
 namespace BirthdayDashing.API.Controllers
@@ -22,8 +25,10 @@ namespace BirthdayDashing.API.Controllers
     [ApiController]
     public class BaseController : ControllerBase
     {
+        protected Guid AuthenticatedUserId => Guid.Parse(User.Identity.Name);
+        protected string[] AuthenticatedUserRoles => User.Claims.Where(x => x.Type == ClaimTypes.Role)?.Select(x => x.Value)?.ToArray();
         public override OkObjectResult Ok([ActionResultObjectValue] object value)
-        {
+        {            
             return base.Ok(new Feedback<object>(value, MessageType.Success, THE_OPERATION_WAS_DONE_SUCCESSFULLY, ""));
         }
     }

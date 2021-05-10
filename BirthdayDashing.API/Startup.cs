@@ -36,12 +36,12 @@ namespace BirthdayDashing.API
                 };
             });
             services.ConfigureSwashBuckleSwagger();
-            services.ConfigureAuthentication(Configuration);
-            services.ConfigureDataAccess(Configuration["ConnectionStrings:" + "Connection"]);
+            services.ConfigureAuthentication(services.ConfigureAppSettings(Configuration));
+            services.ConfigureDataAccess(Configuration["ConnectionStrings:Connection"]);
             services.ConfigureRepositories();
             services.ConfigureServices();
-            services.ConfigureHostAddresses();
-            services.ConfigureEmailSetting(Configuration);
+            services.ConfigureHostAddressesAndAuthorizedUser();
+            services.ConfigureEmailSetting(Configuration);            
         }
 
         /// <summary>

@@ -18,7 +18,6 @@ using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Mime;
 using System.Security.Claims;
@@ -34,8 +33,7 @@ namespace BirthdayDashing.API.Controllers
         private readonly IUserReadService ReadService;
         private readonly IWebHostEnvironment Host;
         private readonly IVerificationCodeWriteService VerificationCodeWriteService;
-        private readonly AppSettings AppSettings;
-        private Guid UserId => Guid.Parse(User.Identity.Name);
+        private readonly AppSettings AppSettings;        
 
         public AccountController(IUserWriteService writeService, IUserReadService readService, IWebHostEnvironment host, IOptions<AppSettings> appSettings, IVerificationCodeWriteService verificationCodeWriteService)
         {
@@ -101,7 +99,7 @@ namespace BirthdayDashing.API.Controllers
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.AddDays(AppSettings.UserExpiteTimeinDay),
+                Expires = DateTime.UtcNow.AddDays(AppSettings.UserAuthorizationTokenExpireTimeInDay),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
@@ -140,7 +138,7 @@ namespace BirthdayDashing.API.Controllers
         [HttpGet]
         public async Task<ActionResult<Feedback<UserDto>>> Get()
         {
-            var Value = await ReadService.GetAsync(UserId);
+            var Value = await ReadService.GetAsync(AuthenticatedUserId);
             if (Value != null)
                 return Ok(Value);
             else
@@ -158,7 +156,7 @@ namespace BirthdayDashing.API.Controllers
         [HttpPut]
         public async Task<ActionResult<Feedback<bool>>> Update([FromBody] UpdateUserDto user)
         {
-            await WriteService.UpdateAsync(UserId, user);
+            await WriteService.UpdateAsync(AuthenticatedUserId, user);
             return Ok(true);
         }
 
@@ -166,7 +164,7 @@ namespace BirthdayDashing.API.Controllers
         [HttpPut("ChangePassword")]
         public async Task<ActionResult<Feedback<bool>>> ChangePassword([FromBody] ChangePasswordDto password)
         {
-            await WriteService.ChangePasswordAsync(UserId, password);
+            await WriteService.ChangePasswordAsync(AuthenticatedUserId, password);
             return Ok(true);
         }        
     }

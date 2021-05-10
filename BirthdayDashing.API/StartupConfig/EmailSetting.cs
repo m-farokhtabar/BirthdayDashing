@@ -23,7 +23,7 @@ namespace BirthdayDashing.API.StartupConfig
         public string[] WelcomeTemplateSetting { get; set; }
         public string[] WelcomeNewDasherTemplateSetting { get; set; }
         public string TemplatePhysicalPath { get; set; }
-        public int TempateCacheExpireInHour { get; set; }
+        public int TempateCacheExpireTimeInHour { get; set; }
 
         public string AppEmail { get; set; }
         public string UserName { get; set; }

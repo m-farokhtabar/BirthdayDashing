@@ -1,4 +1,6 @@
-﻿using BirthdayDashing.Application.Emails;
+﻿using BirthdayDashing.Application.Authorization;
+using BirthdayDashing.Application.Dashings;
+using BirthdayDashing.Application.Emails;
 using BirthdayDashing.Application.Roles;
 using BirthdayDashing.Application.Users;
 using BirthdayDashing.Application.VerificationCodes;
@@ -22,6 +24,13 @@ namespace BirthdayDashing.Application.Configuration.StartupConfig
 
             //Email
             services.AddTransient<IEmailService, EmailService>();
-        }        
+
+            //Dashing
+            services.AddTransient<IDashingWriteService, DashingWriteService>();
+            services.AddTransient<IDashingReadService, DashingReadService>();
+
+            //Authorization
+            services.AddTransient<IAuthorizationService, AuthorizationService>();
+        }
     }
 }

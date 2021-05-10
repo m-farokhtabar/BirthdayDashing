@@ -8,15 +8,15 @@ namespace BirthdayDashing.Application.Dtos.Users.Input
         [Required]
         public DateTime Birthday { get; set; }
         [Required]
-        [MaxLength(20)]
+        [StringLength(20)]
         public string PostalCode { get; set; }
-        [MaxLength(50)]
+        [StringLength(50)]
         public string FirstName { get; set; }
-        [MaxLength(50)]
+        [StringLength(50)]
         public string LastName { get; set; }
-        [MaxLength(50)]
-        public string PhoneNumber { get; set; }        
-        [MaxLength(2048)]
+        [StringLength(50)]
+        public string PhoneNumber { get; set; }
+        [StringLength(2048)]
         //TODO: ImageUrl without url validaition maybe makes some security problems
         //[RegularExpression(@"^\/+.*\.(jpg|jpeg|png|bmp|tif|gif)$")]
         public string ImageUrl { get; set; }

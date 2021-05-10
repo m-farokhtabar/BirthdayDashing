@@ -11,7 +11,7 @@ namespace BirthdayDashing.Application.Dtos.Emails.Input
         [EmailAddress]
         public string Email { get; set; }
         [Required]
-        [MaxLength(20)]
+        [StringLength(20)]
         public string Token { get; set; }
     }
 }

@@ -1,6 +1,9 @@
 ﻿using BirthdayDashing.API.Helper;
+using BirthdayDashing.Application.Configuration.Authorization;
 using BirthdayDashing.Application.Configuration.Email;
+using BirthdayDashing.Domain.SeedWork;
 using BirthdayDashing.Infrastructure.StartupConfig;
+using Common.Validation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -39,11 +42,19 @@ namespace BirthdayDashing.API.StartupConfig
                 c.IncludeXmlComments(XmlAPI);
             });
         }
-        public static void ConfigureAuthentication(this IServiceCollection services, IConfiguration configuration)
+        public static AppSettings ConfigureAppSettings(this IServiceCollection services, IConfiguration configuration)
         {
-            var a = configuration.GetSection("AppSettings");
-            services.Configure<AppSettings>(a);
-            AppSettings AppSettings = a.Get<AppSettings>();            
+            var appSettingsSetting = configuration.GetSection("AppSettings");
+            services.Configure<AppSettings>(appSettingsSetting);
+            AppSettings appSettings = appSettingsSetting.Get<AppSettings>();
+            
+            Validator.MaxAge = appSettings.MaxAge;
+            Validator.MinAge = appSettings.MinAge;
+
+            return appSettings;
+        }
+        public static void ConfigureAuthentication(this IServiceCollection services, AppSettings appSettings)
+        {
             services.AddAuthentication(x =>
             {
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -56,7 +67,7 @@ namespace BirthdayDashing.API.StartupConfig
                 x.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(AppSettings.SigningKey)),
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(appSettings.SigningKey)),
                     ValidateIssuer = false,
                     ValidateAudience = false
                 };
@@ -73,16 +84,17 @@ namespace BirthdayDashing.API.StartupConfig
                     .AllowAnyHeader());
             });
         }
-        public static void ConfigureHostAddresses(this IServiceCollection services)
+        public static void ConfigureHostAddressesAndAuthorizedUser(this IServiceCollection services)
         {
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IHostAddresses, HostAddresses>();
+            services.AddSingleton<IAuthorizedUserDetails, AuthorizedUserDetails>();
         }
         public static void ConfigureEmailSetting(this IServiceCollection services, IConfiguration configuration)
         {
             var EmailSetting = configuration.GetSection("EmailSetting").Get<EmailSetting>();
-            services.AddSingleton<IEmailSetting, EmailSetting>(x=> EmailSetting);            
+            services.AddSingleton<IEmailSetting, EmailSetting>(x=> EmailSetting);
             services.ConfigureEmail();
-        }
+        }        
     }
 }

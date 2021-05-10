@@ -24,6 +24,7 @@
   <ItemGroup>
     <ProjectReference Include="..\BirthdayDashing.Application\BirthdayDashing.Application.csproj" />
     <ProjectReference Include="..\BirthdayDashing.Infrastructure\BirthdayDashing.Infrastructure.csproj" />
+    <ProjectReference Include="..\Common\Common.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -8,7 +8,7 @@ namespace BirthdayDashing.Application.Dtos.Users.Input
         [Required]
         public Guid UserId { get; set; }
         [Required]
-        [MaxLength(20)]
-        public string Token { get; set; }        
+        [StringLength(20)]
+        public string Token { get; set; }
     }
 }

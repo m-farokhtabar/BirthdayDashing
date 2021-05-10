@@ -48,16 +48,16 @@ namespace BirthdayDashing.Application.Users
         }
         public async Task<UserEssentialDataDto> GetEssentialDataAsync(Guid id)
         {
-            return await GetEssentialDataAsync<Guid>("[Id]", id);
+            return await GetEssentialDataAsync<Guid>("Id", id);
         }
         public async Task<UserEssentialDataDto> GetEssentialDataByEmailAsync(string email)
         {
-            return await GetEssentialDataAsync<string>("[Email]", email);
+            return await GetEssentialDataAsync<string>("Email", email);
         }
         private async Task<UserEssentialDataDto> GetEssentialDataAsync<T>(string fieldName, T value)
         {
             string Query = "SELECT [CurrentUser].[Id], [CurrentUser].[Email], [CurrentUser].[IsApproved], [Role].[Name] FROM " +
-                           $"(SELECT [Id],[Email],[IsApproved] FROM [User] WHERE [{fieldName}]=@Value) AS [CurrentUser]" +
+                           $"(SELECT [Id],[Email],[IsApproved] FROM [User] WHERE [{fieldName}]=@Value) AS [CurrentUser] " +
                            "LEFT JOIN [UserRole] ON [CurrentUser].[Id]=[UserRole].[UserId] LEFT JOIN [Role] ON [Role].[Id] = [UserRole].[RoleId]";
             UserEssentialDataDto ResultUserWithRolesName = null;
             var Result = (await DbEntities.QueryAsync<UserEssentialDataDto, RoleNameDto, UserEssentialDataDto>(Query,

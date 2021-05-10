@@ -21,7 +21,7 @@
         string[] WelcomeTemplateSetting { get; set; }
         string[] WelcomeNewDasherTemplateSetting { get; set; }
         string TemplatePhysicalPath { get; set; }
-        int TempateCacheExpireInHour { get; set; }
+        int TempateCacheExpireTimeInHour { get; set; }
 
         string AppEmail { get; set; }
         string UserName { get; set; }

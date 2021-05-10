@@ -9,19 +9,19 @@ using static Common.Exception.Messages;
 namespace BirthdayDashing.Domain.Users
 {
     public class User : Entity
-    {
+    {        
         /// <summary>
         /// just for Mapping
         /// </summary>
         private User()
-        {
-
+        {            
         }
         public User(string email, string password, string postalCode, DateTime birthday, Guid RoleId, string firstName = null, string lastName = null, string phoneNumber = null, string imageUrl = null)
         {
             Validate(nameof(Email), email, Validator.EmailIsValid);
             Validate(nameof(Password), password, Validator.StringIsNotNullOrWhiteSpace);
             Validate(nameof(PostalCode), postalCode, Validator.StringIsNotNullOrWhiteSpace);
+            Validate(nameof(PostalCode), postalCode, Validator.PostalCodeIsValid);
             Validate(nameof(Birthday), birthday, Validator.BirthdayIsValid);
 
             Email = email;
@@ -39,6 +39,7 @@ namespace BirthdayDashing.Domain.Users
         {
             Validate(nameof(Birthday), birthday, Validator.BirthdayIsValid);
             Validate(nameof(PostalCode), postalCode, Validator.StringIsNotNullOrWhiteSpace);
+            Validate(nameof(PostalCode), postalCode, Validator.PostalCodeIsValid);
 
             PostalCode = postalCode;
             Birthday = birthday;
@@ -55,7 +56,7 @@ namespace BirthdayDashing.Domain.Users
                 Password = Security.HashPassword(newPassword);
             }
             else
-                throw new ManualException(DATA_IS_WRONG.Replace("{0}", nameof(oldPassword)), ExceptionType.InValid, nameof(oldPassword));
+                throw new ManualException(DATA_IS_WRONG.Replace("{0}", nameof(oldPassword)), ExceptionType.InValid, nameof(oldPassword));            
         }
         public void ResetPassword(string newPassword)
         {
@@ -78,6 +79,6 @@ namespace BirthdayDashing.Domain.Users
         private List<UserRole> userRoles;
         public IReadOnlyCollection<UserRole> UserRoles => userRoles?.AsReadOnly();
         [System.ComponentModel.DataAnnotations.Timestamp]
-        public byte[] RowVersion { get; private set; }
+        public byte[] RowVersion { get; private set; }        
     }
 }
