@@ -1,6 +1,4 @@
-﻿using Common.Validation;
-
-namespace BirthdayDashing.API.StartupConfig
+﻿namespace BirthdayDashing.API.StartupConfig
 {
     public interface IAppSettings
     {

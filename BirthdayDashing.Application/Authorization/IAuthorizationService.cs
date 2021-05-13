@@ -6,5 +6,6 @@ namespace BirthdayDashing.Application.Authorization
     {
         Guid UserId { get; }
         void Authorized(Guid OwnerId);
+        void JustOwnerAuthorized(Guid? OwnerId);
     }
 }

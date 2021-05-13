@@ -56,7 +56,7 @@ namespace BirthdayDashing.Domain.Users
                 Password = Security.HashPassword(newPassword);
             }
             else
-                throw new ManualException(DATA_IS_WRONG.Replace("{0}", nameof(oldPassword)), ExceptionType.InValid, nameof(oldPassword));            
+                throw new ManualException(DATA_IS_WRONG.Replace("{0}", nameof(oldPassword)), ExceptionType.InValid, nameof(oldPassword));
         }
         public void ResetPassword(string newPassword)
         {

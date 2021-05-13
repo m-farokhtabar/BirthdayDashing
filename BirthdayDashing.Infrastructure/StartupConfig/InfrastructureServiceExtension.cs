@@ -1,5 +1,6 @@
 ﻿using BirthdayDashing.Application.Configuration.Data;
 using BirthdayDashing.Application.Configuration.Email;
+using BirthdayDashing.Domain.Comment;
 using BirthdayDashing.Domain.Dashing;
 using BirthdayDashing.Domain.SeedWork;
 using BirthdayDashing.Domain.Users;
@@ -31,6 +32,7 @@ namespace BirthdayDashing.Infrastructure.StartupConfig
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<IVerificationCodeRepository, VerificationCodeRepository>();
             services.AddTransient<IDashingRepository, DashingRepository>();
+            services.AddTransient<ICommentRepository, CommentRepository>();
         }
         public static void ConfigureEmail(this IServiceCollection services)
         {            

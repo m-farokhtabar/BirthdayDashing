@@ -24,5 +24,13 @@ namespace BirthdayDashing.Application.Authorization
             if (AuthorizedUserDetails.UserId != OwnerId && !AuthorizedUserDetails.Roles.Any(x => x == Role.Admin))
                 throw new ManualException(USER_IS_NOT_AUTHORIZED, ExceptionType.UnAuthorized, "User");
         }
+        public void JustOwnerAuthorized(Guid? OwnerId)
+        {            
+            if (AuthorizedUserDetails.Roles is null || AuthorizedUserDetails.Roles.Length == 0 || OwnerId is null)
+                throw new ManualException(USER_IS_NOT_AUTHORIZED, ExceptionType.UnAuthorized, "User");
+
+            if (AuthorizedUserDetails.UserId != OwnerId)
+                throw new ManualException(USER_IS_NOT_AUTHORIZED, ExceptionType.UnAuthorized, "User");
+        }
     }
 }

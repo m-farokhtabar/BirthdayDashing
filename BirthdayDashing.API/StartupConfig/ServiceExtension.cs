@@ -1,7 +1,6 @@
 ﻿using BirthdayDashing.API.Helper;
 using BirthdayDashing.Application.Configuration.Authorization;
 using BirthdayDashing.Application.Configuration.Email;
-using BirthdayDashing.Domain.SeedWork;
 using BirthdayDashing.Infrastructure.StartupConfig;
 using Common.Validation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
