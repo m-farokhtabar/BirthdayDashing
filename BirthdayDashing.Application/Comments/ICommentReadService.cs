@@ -8,6 +8,7 @@ namespace BirthdayComment.Application.Comments
     public interface ICommentReadService
     {
         Task<CommentDto> GetAsync(Guid id);
-        Task<IEnumerable<CommentListDto>> GetByDashingIdAsync(Guid DashingId, DateTime? Date = null);
+        Task<IList<CommentListDto>> GetByDashingIdAsync(Guid DashingId, DateTime? Date = null);
+        Task<IList<CommentListDto>> GetChildren(Guid id, DateTime? CreatedDate = null);
     }
 }

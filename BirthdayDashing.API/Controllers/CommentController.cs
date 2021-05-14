@@ -56,7 +56,17 @@ namespace BirthdayDashing.API.Controllers
         public async Task<ActionResult<Feedback<IEnumerable<CommentListDto>>>> GetByDashingId(Guid DashingId, DateTime? Date)
         {
             var Value = await ReadService.GetByDashingIdAsync(DashingId, Date);
-            return Value != null ? Ok(Value) : throw new ManualException(DATA_IS_NOT_FOUND.Replace("{0}", "Comment"), ExceptionType.NotFound, "Id");
+            return Value?.Count > 0 ? Ok(Value) : throw new ManualException(DATA_IS_NOT_FOUND.Replace("{0}", "Comment"), ExceptionType.NotFound, "Id");
+        }
+        /// <summary>
+        /// Get Children  Of an Comment
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("Children/{id}/{Date?}")]
+        public async Task<ActionResult<Feedback<IEnumerable<CommentListDto>>>> GetChildrenComment(Guid id, DateTime? Date)
+        {
+            var Value = await ReadService.GetChildren(id, Date);
+            return Value?.Count > 0 ? Ok(Value) : throw new ManualException(THERE_ARE_ANY_DATA_TO_SHOW.Replace("{0}", "Inner comments"), ExceptionType.NotFound, "Id");
         }
     }
 }

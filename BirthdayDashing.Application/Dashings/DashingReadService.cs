@@ -30,7 +30,7 @@ namespace BirthdayDashing.Application.Dashings
                 AuthorizationService.Authorized(result.UserId);
             return result;
         }
-        public async Task<IEnumerable<DashingDto>> GetByUserIdAsync(Guid userId)
+        public async Task<List<DashingDto>> GetByUserIdAsync(Guid userId)
         {
             const string Query = "SELECT [Id],[UserId],[Birthday],[Title],[PostalCode],[DashingAmount],[Active],[Deleted]," +
                                  "[BackgroundUUID],[Name],[CurrentYearBirthday],[City],[State],[TitleUpdated] " +

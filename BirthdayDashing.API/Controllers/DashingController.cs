@@ -38,7 +38,7 @@ namespace BirthdayDashing.API.Controllers
         }
         [HttpPut("ToggleActive/{id}")]
         public async Task<ActionResult<Feedback<bool>>> ToggleActive(Guid id)
-        {            
+        {
             return Ok(await WriteService.ToggleActiveAsync(id));
         }
         [HttpPut("ToggleDeleted/{id}")]
@@ -60,7 +60,7 @@ namespace BirthdayDashing.API.Controllers
         public async Task<ActionResult<Feedback<IEnumerable<DashingDto>>>> Get()
         {
             var Value = await ReadService.GetByUserIdAsync(AuthenticatedUserId);
-            return Value != null ? Ok(Value) : throw new ManualException(DATA_IS_NOT_FOUND.Replace("{0}", "Dashing"), ExceptionType.NotFound, "Id");
+            return Value?.Count > 0 ? Ok(Value) : throw new ManualException(DATA_IS_NOT_FOUND.Replace("{0}", "Dashing"), ExceptionType.NotFound, "Id");
         }
     }
 }

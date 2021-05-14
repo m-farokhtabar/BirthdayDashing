@@ -8,6 +8,6 @@ namespace BirthdayDashing.Application.Dashings
     public interface IDashingReadService
     {
         Task<DashingDto> GetAsync(Guid id);
-        Task<IEnumerable<DashingDto>> GetByUserIdAsync(Guid userId);
+        Task<List<DashingDto>> GetByUserIdAsync(Guid userId);
     }
 }

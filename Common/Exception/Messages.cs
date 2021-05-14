@@ -9,6 +9,7 @@
         public const string DATA_IS_ALREADY_APPROVED = "{0} is already approved";
         public const string DATA_IS_NOT_FOUND = "{0} is not found";
         public const string THERE_ARE_ANY_DATA_TO_ASSIGN = "There are not any {0} to assign";
+        public const string THERE_ARE_ANY_DATA_TO_SHOW = "There are not any {0} to show";
 
         public const string USER_IS_NOT_AUTHORIZED = "User is not authorized";
         public const string USER_IS_NOT_APPROVED = "User is not approved";
