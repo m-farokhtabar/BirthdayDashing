@@ -76,24 +76,14 @@ namespace BirthdayDashing.API.Controllers
         [HttpPost("Login")]
         public async Task<ActionResult<Feedback<AuthenticatedUserViewModel>>> Login(LoginDto login)
         {
-            UserWithRolesNameDto userRolesInfo = await ReadService.GetAuthenticationDataByEmailAsync(login.Email);
-            if (userRolesInfo is null)
-                throw new ManualException(DATA_IS_INCORRECT.Replace("{0}", nameof(login.Email)), ExceptionType.NotFound, nameof(login.Email));
-            if (!Common.Security.VerifyPassword(login.Password, userRolesInfo.Password))
-                throw new ManualException(DATA_IS_INCORRECT.Replace("{0}", nameof(login.Password)), ExceptionType.NotFound, nameof(login.Password));
-
-            if (userRolesInfo.Roles is null || userRolesInfo.Roles.Count == 0)
-                throw new ManualException(USER_IS_NOT_AUTHORIZED, ExceptionType.UnAuthorized, "User");
-
-            if (!userRolesInfo.IsApproved)
-                throw new ManualException(USER_IS_NOT_APPROVED, ExceptionType.UnAuthorized, nameof(userRolesInfo.IsApproved));
+            var userRolesInfo = await WriteService.Login(login);
 
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(AppSettings.SigningKey);
 
             List<Claim> claims = new();
             claims.Add(new(ClaimTypes.Name, userRolesInfo.Id.ToString()));
-            foreach (var Role in userRolesInfo.Roles)
+            foreach (var Role in userRolesInfo.RolesName)
                 claims.Add(new(ClaimTypes.Role, Role.Name));
 
             var tokenDescriptor = new SecurityTokenDescriptor

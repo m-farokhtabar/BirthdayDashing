@@ -1,6 +1,7 @@
 ﻿using BirthdayDashing.API.Helper;
 using BirthdayDashing.Application.Configuration.Authorization;
 using BirthdayDashing.Application.Configuration.Email;
+using BirthdayDashing.Application.Configuration.Setting;
 using BirthdayDashing.Infrastructure.StartupConfig;
 using Common.Validation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -49,6 +50,8 @@ namespace BirthdayDashing.API.StartupConfig
             
             Validator.MaxAge = appSettings.MaxAge;
             Validator.MinAge = appSettings.MinAge;
+            
+            services.AddSingleton<ISettings, AppSettings>(x=> appSettings);
 
             return appSettings;
         }

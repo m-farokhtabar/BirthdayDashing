@@ -12,6 +12,7 @@
         public const string THERE_ARE_ANY_DATA_TO_SHOW = "There are not any {0} to show";
 
         public const string USER_IS_NOT_AUTHORIZED = "User is not authorized";
+        public const string YOU_HAVE_ENTERED_THE_WRONG_PASSWORD_TOO_MANY_TIMES = "You've entered the wrong password too many times";
         public const string USER_IS_NOT_APPROVED = "User is not approved";
         public const string THE_OPERATION_WAS_DONE_SUCCESSFULLY = "The operation was done successfully";
         public const string INTERNAL_ERROR = "Internal error";

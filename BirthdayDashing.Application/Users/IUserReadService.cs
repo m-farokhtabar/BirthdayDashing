@@ -8,7 +8,6 @@ namespace BirthdayDashing.Application.Users
     {
         Task<UserDto> GetAsync(Guid id);
         Task<UserEssentialDataDto> GetEssentialDataAsync(Guid id);
-        Task<UserEssentialDataDto> GetEssentialDataByEmailAsync(string email);
-        Task<UserWithRolesNameDto> GetAuthenticationDataByEmailAsync(string email);
+        Task<UserEssentialDataDto> GetEssentialDataByEmailAsync(string email);        
     }
 }

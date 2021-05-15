@@ -1,11 +1,10 @@
-﻿namespace BirthdayDashing.API.StartupConfig
+﻿using BirthdayDashing.Application.Configuration.Setting;
+
+namespace BirthdayDashing.API.StartupConfig
 {
-    public interface IAppSettings
+    public interface IAppSettings : ISettings
     {
         string SigningKey { get; }
         int UserAuthorizationTokenExpireTimeInDay { get; }
-        int MinAge { get;  }
-        int MaxAge { get; }
-
     }
 }

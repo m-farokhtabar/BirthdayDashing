@@ -1,7 +1,12 @@
-﻿using BirthdayDashing.Application.Dtos.Emails.Input;
+﻿using BirthdayDashing.Application.Configuration.Setting;
+using BirthdayDashing.Application.Dtos.Emails.Input;
+using BirthdayDashing.Application.Dtos.Roles.Output;
 using BirthdayDashing.Application.Dtos.Users.Input;
+using BirthdayDashing.Application.Dtos.Users.Output;
+using BirthdayDashing.Application.Dtos.VerficationCodes.Output;
 using BirthdayDashing.Application.Emails;
 using BirthdayDashing.Application.Roles;
+using BirthdayDashing.Application.VerificationCodes;
 using BirthdayDashing.Domain.Roles;
 using BirthdayDashing.Domain.SeedWork;
 using BirthdayDashing.Domain.Users;
@@ -9,6 +14,7 @@ using BirthdayDashing.Domain.VerificationCodes;
 using Common.Exception;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using static Common.Exception.Messages;
 
@@ -19,16 +25,20 @@ namespace BirthdayDashing.Application.Users
         private readonly IUnitOfWork UnitOfWork;
         private readonly IUserRepository Repository;
         private readonly IVerificationCodeRepository VerificationCodeRepository;
+        private readonly IVerificationCodeReadService VerificationCodeReadService;
         private readonly IEmailService EmailService;
         private readonly IRoleReadService RoleReadService;
+        private readonly ISettings AppSettings;
 
-        public UserWriteService(IUnitOfWork unitOfWork, IUserRepository repository, IVerificationCodeRepository verificationCodeRepository, IEmailService emailService, IRoleReadService roleReadService)
+        public UserWriteService(IUnitOfWork unitOfWork, IUserRepository repository, IVerificationCodeRepository verificationCodeRepository, IVerificationCodeReadService verificationCodeReadService, IEmailService emailService, IRoleReadService roleReadService, ISettings appSettings)
         {
             UnitOfWork = unitOfWork;
             Repository = repository;
             VerificationCodeRepository = verificationCodeRepository;
+            VerificationCodeReadService = verificationCodeReadService;            
             EmailService = emailService;
             RoleReadService = roleReadService;
+            AppSettings = appSettings;
         }
         public async Task AddAsync(AddUserDto user)
         {
@@ -61,10 +71,10 @@ namespace BirthdayDashing.Application.Users
             if (entity.IsApproved)
                 throw new ManualException(DATA_IS_ALREADY_APPROVED.Replace("{0}", "User"), ExceptionType.Conflict, nameof(entity.IsApproved));
 
-            List<VerificationCode> VerificationCodeEntities = await VerificationCodeRepository.GetAsync(confirmUser.UserId, confirmUser.Token);
-            foreach (var item in VerificationCodeEntities)
+            List<VerificationCodeDataForVerifyDto> VCodes = await VerificationCodeReadService.GetDataForVerifyAsync(confirmUser.UserId, confirmUser.Token);
+            foreach (var item in VCodes)
             {
-                if (item.ExpireDate.CompareTo(DateTime.Now) > 0 && item.Type == VerificationType.ConfirmUserByEmail)
+                if (item.ExpireDate.CompareTo(DateTime.Now) > 0 && item.Type == VerificationTypeDto.ConfirmUserByEmail)
                 {
                     entity.Approved();
                     break;
@@ -75,7 +85,7 @@ namespace BirthdayDashing.Application.Users
             try
             {
                 await Repository.UpdateIsApprovedAsync(entity);
-                UnitOfWork.SaveChanges();                
+                UnitOfWork.SaveChanges();
             }
             catch
             {
@@ -129,10 +139,10 @@ namespace BirthdayDashing.Application.Users
                 throw new ManualException(USER_IS_NOT_APPROVED, ExceptionType.UnAuthorized, nameof(entity.IsApproved));
 
             bool TokenIsAcceptable = false;
-            List<VerificationCode> VerificationCodeEntities = await VerificationCodeRepository.GetAsync(id, password.Token);
-            foreach (var item in VerificationCodeEntities)
+            List<VerificationCodeDataForVerifyDto> VCodes = await VerificationCodeReadService.GetDataForVerifyAsync(id, password.Token);
+            foreach (var item in VCodes)
             {
-                if (item.ExpireDate.CompareTo(DateTime.Now) > 0 && item.Type == VerificationType.ForgotPasswordByEmail)
+                if (item.ExpireDate.CompareTo(DateTime.Now) > 0 && item.Type == VerificationTypeDto.ForgotPasswordByEmail)
                 {
                     entity.ResetPassword(password.NewPassword);
                     TokenIsAcceptable = true;
@@ -151,6 +161,63 @@ namespace BirthdayDashing.Application.Users
                 UnitOfWork.RollBack();
                 throw;
             }
+        }
+        public async Task<UserLoginDto> Login(LoginDto login)
+        {
+            User entity = await Repository.GetByEmailAsync(login.Email);
+            if (entity is null)
+                throw new ManualException(DATA_IS_NOT_FOUND.Replace("{0}", "User"), ExceptionType.NotFound, nameof(login.Email));
+
+            if (entity.UserRoles is null || entity.UserRoles.Count == 0)
+                throw new ManualException(USER_IS_NOT_AUTHORIZED, ExceptionType.UnAuthorized, "Role");
+
+            if (!entity.IsApproved)
+                throw new ManualException(USER_IS_NOT_APPROVED, ExceptionType.UnAuthorized, nameof(entity.IsApproved));
+
+            if (entity.LockOutThreshold >= AppSettings.MaxLockOutThreshold)
+                throw new ManualException(YOU_HAVE_ENTERED_THE_WRONG_PASSWORD_TOO_MANY_TIMES, ExceptionType.UnAuthorized, "LockOutThreshold");
+
+            if (!Common.Security.VerifyPassword(login.Password, entity.Password))
+            {
+                entity.IncreaseLockOutThreshold();
+                try
+                {
+                    await Repository.UpdateLockOutThresholdAsync(entity);
+                    UnitOfWork.SaveChanges();
+                }
+                catch
+                {
+                    UnitOfWork.RollBack();
+                    throw;
+                }
+                throw new ManualException(DATA_IS_INCORRECT.Replace("{0}", nameof(login.Password)), ExceptionType.NotFound, nameof(login.Password));
+            }
+            var Roles = await RoleReadService.GetAllAsync();
+            if (Roles is null || Roles.Count == 0)
+                throw new ManualException(USER_IS_NOT_AUTHORIZED, ExceptionType.UnAuthorized, "Role");
+
+            entity.UpdateLastLoginDate();
+            try
+            {
+                await Repository.UpdateLastLoginDateAsync(entity);
+                UnitOfWork.SaveChanges();
+            }
+            catch
+            {
+                UnitOfWork.RollBack();
+                throw;
+            }
+            return new UserLoginDto()
+            {
+                Id = entity.Id,
+                Birthday = entity.Birthday,
+                FirstName = entity.FirstName,
+                LastName = entity.LastName,
+                ImageUrl = entity.ImageUrl,
+                PhoneNumber = entity.PhoneNumber,
+                PostalCode = entity.PostalCode,
+                RolesName = Roles.Where(x => entity.UserRoles.Any(y => y.RoleId == x.Id)).Select(x => new RoleNameDto() { Name = x.Name }).ToList()
+            };
         }
     }
 }

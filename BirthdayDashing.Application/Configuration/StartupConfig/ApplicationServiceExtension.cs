@@ -23,6 +23,7 @@ namespace BirthdayDashing.Application.Configuration.StartupConfig
 
             //VerificationCode
             services.AddTransient<IVerificationCodeWriteService, VerificationCodeWriteService>();
+            services.AddTransient<IVerificationCodeReadService, VerificationCodeReadService>();
 
             //Email
             services.AddTransient<IEmailService, EmailService>();

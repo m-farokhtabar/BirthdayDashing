@@ -16,17 +16,9 @@ namespace BirthdayDashing.Infrastructure.Repository
         {
         }
 
-        public async Task AddAsync(User entity)
+        private async Task<User> GetByKeyAsync<T>(T key, string KeyName)
         {
-            const string command = "INSERT INTO [User]([Id],[Email],[Password],[Birthday],[PostalCode],[FirstName],[LastName],[PhoneNumber],[ImageUrl],[IsApproved]) " +
-                                   "VALUES(@Id,@Email,@Password,@Birthday,@PostalCode,@FirstName,@LastName,@PhoneNumber,@ImageUrl,@IsApproved); " +
-                                   "INSERT INTO [UserRole]([UserId],[RoleId]) VALUES(@Id,@RoleId)";
-            await DbEntities.ExecuteAsync(command, new { Id = entity.Id, Email = entity.Email, Password = entity.Password, Birthday = entity.Birthday, PostalCode = entity.PostalCode, FirstName = entity.FirstName, LastName = entity.LastName, PhoneNumber = entity.PhoneNumber, ImageUrl = entity.ImageUrl, IsApproved = entity.IsApproved, RoleId = entity.UserRoles.AsList()[0].RoleId }, Transaction);
-        }
-
-        public async Task<User> GetAsync(Guid id)
-        {
-            const string Query = "SELECT [CurrentUser].*, [UserRole].[RoleId] FROM (SELECT * FROM [User] WHERE [Id]=@Id) AS [CurrentUser] LEFT JOIN [UserRole] ON [CurrentUser].[Id] = [UserRole].[UserId]";
+            string Query = $"SELECT [CurrentUser].*, [UserRole].[RoleId] FROM (SELECT * FROM [User] WHERE [{KeyName}]=@key) AS [CurrentUser] LEFT JOIN [UserRole] ON [CurrentUser].[Id] = [UserRole].[UserId]";
 
             User CurrentUser = null;
             List<UserRole> CurrentUserRoles = null;
@@ -46,29 +38,51 @@ namespace BirthdayDashing.Infrastructure.Repository
                 return CurrentUser;
             },
             splitOn: "RoleId",
-            param: new { id }, transaction: Transaction)).FirstOrDefault();
+            param: new { key }, transaction: Transaction)).FirstOrDefault();
             if (Result != null && CurrentUserRoles?.Count > 0)
                 Result.GetType().GetField("userRoles", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(Result, CurrentUserRoles);
 
             return Result;
         }
+        public async Task<User> GetByEmailAsync(string email) => await GetByKeyAsync<string>(email, "Email");
+        public async Task<User> GetAsync(Guid id) => await GetByKeyAsync<Guid>(id, "Id");
+
+
+        public async Task AddAsync(User entity)
+        {
+            const string command = "INSERT INTO [User]([Id],[Email],[Password],[Birthday],[PostalCode],[FirstName],[LastName],[PhoneNumber],[ImageUrl],[IsApproved],[LastLoginDate],[LockOutThreshold]) " +
+                                   "VALUES(@Id,@Email,@Password,@Birthday,@PostalCode,@FirstName,@LastName,@PhoneNumber,@ImageUrl,@IsApproved,@LastLoginDate,@LockOutThreshold); " +
+                                   "INSERT INTO [UserRole]([UserId],[RoleId]) VALUES(@Id,@RoleId)";
+            await DbEntities.ExecuteAsync(command, new { entity.Id, entity.Email, entity.Password, entity.Birthday, entity.PostalCode, entity.FirstName, entity.LastName, entity.PhoneNumber, entity.ImageUrl, entity.IsApproved, entity.UserRoles.AsList()[0].RoleId, entity.LastLoginDate, entity.LockOutThreshold }, Transaction);
+        }
+
 
         public async Task UpdateAsync(User entity)
         {
             const string command = "UPDATE [User] SET " +
                                    "[Birthday]=@Birthday ,[PostalCode]=@PostalCode ,[FirstName] = @FirstName,[LastName] = @LastName, [PhoneNumber] = @PhoneNumber,[ImageUrl] = @ImageUrl " +
                                    "WHERE [Id]=@Id AND [RowVersion]=@RowVersion";
-            await DbEntities.ExecuteAsync(command, new { Birthday = entity.Birthday, PostalCode = entity.PostalCode, FirstName = entity.FirstName, LastName = entity.LastName, PhoneNumber = entity.PhoneNumber, ImageUrl = entity.ImageUrl, Id = entity.Id, RowVersion = entity.RowVersion }, Transaction);
+            await DbEntities.ExecuteAsync(command, new { entity.Birthday, entity.PostalCode, entity.FirstName, entity.LastName, entity.PhoneNumber, entity.ImageUrl, entity.Id, entity.RowVersion }, Transaction);
         }
         public async Task UpdateIsApprovedAsync(User entity)
         {
             const string command = "UPDATE [User] SET [IsApproved]=@IsApproved WHERE [Id]=@Id AND [RowVersion]=@RowVersion";
-            await DbEntities.ExecuteAsync(command, new { IsApproved = entity.IsApproved, Id = entity.Id, RowVersion = entity.RowVersion }, Transaction);
+            await DbEntities.ExecuteAsync(command, new { entity.IsApproved, entity.Id, entity.RowVersion }, Transaction);
         }
         public async Task UpdatePasswordAsync(User entity)
         {
-            const string command = "UPDATE [User] SET [Password]=@Password WHERE [Id]=@Id AND [RowVersion]=@RowVersion";
-            await DbEntities.ExecuteAsync(command, new { Password = entity.Password, Id = entity.Id, RowVersion = entity.RowVersion }, Transaction);
+            const string command = "UPDATE [User] SET [Password]=@Password,[LockOutThreshold]=@LockOutThreshold WHERE [Id]=@Id AND [RowVersion]=@RowVersion";
+            await DbEntities.ExecuteAsync(command, new { entity.Password, entity.LockOutThreshold, entity.Id, entity.RowVersion }, Transaction);
+        }
+        public async Task UpdateLockOutThresholdAsync(User entity)
+        {
+            const string command = "UPDATE [User] SET [LockOutThreshold]=@LockOutThreshold WHERE [Id]=@Id AND [RowVersion]=@RowVersion";
+            await DbEntities.ExecuteAsync(command, new { entity.LockOutThreshold, entity.Id, entity.RowVersion }, Transaction);
+        }
+        public async Task UpdateLastLoginDateAsync(User entity)
+        {
+            const string command = "UPDATE [User] SET [LastLoginDate]=@LastLoginDate WHERE [Id]=@Id AND [RowVersion]=@RowVersion";
+            await DbEntities.ExecuteAsync(command, new { entity.LastLoginDate, entity.Id, entity.RowVersion }, Transaction);
         }
     }
 }

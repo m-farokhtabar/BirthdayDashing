@@ -34,6 +34,8 @@ namespace BirthdayDashing.Domain.Users
             ImageUrl = imageUrl;
             userRoles = new List<UserRole>() { new UserRole(Id, RoleId) { } };
             IsApproved = false;
+            LastLoginDate = null;
+            LockOutThreshold = 0;
         }
         public void Update(string postalCode, DateTime birthday, string firstName, string lastName, string phoneNumber, string imageUrl)
         {
@@ -62,10 +64,19 @@ namespace BirthdayDashing.Domain.Users
         {
             Validate(nameof(newPassword), newPassword, Validator.StringIsNotNullOrWhiteSpace);
             Password = Security.HashPassword(newPassword);
+            LockOutThreshold = 0;
         }
         public void Approved()
         {
             IsApproved = true;
+        }
+        public void IncreaseLockOutThreshold()
+        {
+            LockOutThreshold++;
+        }
+        public void UpdateLastLoginDate()
+        {
+            LastLoginDate = DateTime.Now;
         }
         public string Email { get; private set; }
         public string Password { get; private set; }
@@ -76,9 +87,10 @@ namespace BirthdayDashing.Domain.Users
         public string LastName { get; private set; }
         public string ImageUrl { get; private set; }
         public bool IsApproved { get; private set; }
+        public DateTime? LastLoginDate { get; private set; }
+        public int LockOutThreshold { get; private set; }
         private List<UserRole> userRoles;
-        public IReadOnlyCollection<UserRole> UserRoles => userRoles?.AsReadOnly();
-        [System.ComponentModel.DataAnnotations.Timestamp]
+        public IReadOnlyCollection<UserRole> UserRoles => userRoles?.AsReadOnly();        
         public byte[] RowVersion { get; private set; }        
     }
 }

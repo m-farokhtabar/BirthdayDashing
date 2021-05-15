@@ -9,6 +9,7 @@ using Microsoft.Extensions.FileProviders;
 using System.Data.SqlClient;
 using System.IO;
 using System.Net;
+using System.Net.Mime;
 using static Common.Exception.Messages;
 
 namespace BirthdayDashing.API.StartupConfig
@@ -83,6 +84,34 @@ namespace BirthdayDashing.API.StartupConfig
                         await context.Response.WriteAsync(Fb.ToString());
                     }
                 });
+            });
+        }
+
+        public static void UseCustomizeUseStatusCodePages(this IApplicationBuilder app)
+        {
+            app.UseStatusCodePages(async context =>
+            {
+                context.HttpContext.Response.ContentType = MediaTypeNames.Application.Json;
+                string Message;
+                string Key;
+                switch (context.HttpContext.Response.StatusCode)
+                {
+                    case 401:
+                        Message = USER_IS_NOT_AUTHORIZED;
+                        Key = "User";
+                        break;
+                    case 403:
+                        Message = USER_IS_NOT_AUTHORIZED;
+                        Key = "User";
+                        break;
+                    default:
+                        Message = "Runtime error has been occured!";
+                        Key = context.HttpContext.Response.StatusCode.ToString();
+                        break;
+                }
+
+                Feedback<bool> Fb = new(false, MessageType.RuntimeError, Message, Key);
+                await context.HttpContext.Response.WriteAsync(Fb.ToString());                
             });
         }
     }

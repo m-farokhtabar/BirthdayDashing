@@ -58,15 +58,26 @@ namespace BirthdayDashing.API
                 app.UseSwashBuckleSwagger();
             }            
             app.UseCustomizeExceptionHandler(srp.GetService<IManageDbExceptionUniqueAndKeyFields>());
+            app.UseCustomizeUseStatusCodePages();
             //app.UseStatusCodePages(async context =>
             //{
             //    if (context.HttpContext.Request.Path.StartsWithSegments("/api") &&
             //       (context.HttpContext.Response.StatusCode == 401 ||
             //        context.HttpContext.Response.StatusCode == 403))
             //    {
+            //        await context.HttpContext.Response.Body.WriteAsync("Hello".ToCharArray());
             //        //await context.HttpContext.Response.WriteAsync("Unauthorized request");
             //    }
             //});
+
+            //app.UseStatusCodePages(async context =>
+            //{                
+            //    context.HttpContext.Response.ContentType = "text/plain";
+            //    context.HttpContext.Response.SendAsync()
+            //    //await context.HttpContext.Response.Send(
+            //    //    "Status code lambda, status code: " +
+            //    //    context.HttpContext.Response.StatusCode);
+            //});            
 
             app.UseHttpsRedirection();
             app.UseStaticFilesAllowUploadedFile(env);

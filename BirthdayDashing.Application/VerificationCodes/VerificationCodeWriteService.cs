@@ -5,6 +5,7 @@ using BirthdayDashing.Application.Users;
 using BirthdayDashing.Domain.SeedWork;
 using BirthdayDashing.Domain.VerificationCodes;
 using Common.Exception;
+using System;
 using System.Threading.Tasks;
 using static Common.Exception.Messages;
 
@@ -24,6 +25,11 @@ namespace BirthdayDashing.Application.VerificationCodes
             EmailService = emailService;
             UserReadService = userReadService;
         }
+        public async Task NewCodeForConfirmEmailAsync(NewConfirmEmailDto NewConfirmEmail)
+        {
+            VerificationCode Entity = await NewCode(NewConfirmEmail.UserId, EmailService.GetConfirmEmailExpireTimeInMinute());
+            await EmailService.SendConfirmEmail(new SendConfirmEmailDto() { UserId = NewConfirmEmail.UserId, Email = NewConfirmEmail.Email, Token = Entity.Token });
+        }
         public async Task NewCodeForConfirmEmailAsync(ReSendConfirmEmailDto confirmEmail)
         {
             var userInfo = await UserReadService.GetEssentialDataAsync(confirmEmail.Id);
@@ -33,18 +39,8 @@ namespace BirthdayDashing.Application.VerificationCodes
                 throw new ManualException(USER_IS_NOT_AUTHORIZED, ExceptionType.UnAuthorized, "Role");
             if (userInfo.IsApproved)
                 throw new ManualException(DATA_IS_ALREADY_APPROVED.Replace("{0}", "User"), ExceptionType.Conflict, nameof(userInfo.IsApproved));
-
-            VerificationCode Entity = new(userInfo.Id, EmailService.GetConfirmEmailExpireTimeInMinute());
-            try
-            {
-                await Repository.AddAsync(Entity);
-                UnitOfWork.SaveChanges();
-            }
-            catch
-            {
-                UnitOfWork.RollBack();
-                throw;
-            }
+             
+            VerificationCode Entity = await NewCode(userInfo.Id, EmailService.GetConfirmEmailExpireTimeInMinute());
             await EmailService.SendConfirmEmail(new SendConfirmEmailDto() { UserId = userInfo.Id, Email = userInfo.Email, Token = Entity.Token });
         }
         public async Task NewCodeForForgotPasswordAsync(ForgotPasswordDto forgotPasswordEmail)
@@ -69,6 +65,22 @@ namespace BirthdayDashing.Application.VerificationCodes
                 throw;
             }
             await EmailService.SendForgotPasswordEmail(new SendForgotPasswordEmailDto() { UserId = userInfo.Id, Email = userInfo.Email, Token = Entity.Token });
+        }
+
+        private async Task<VerificationCode> NewCode(Guid UserId, int ExpiredTimeInMinute, VerificationType type = VerificationType.ConfirmUserByEmail)
+        {
+            VerificationCode Entity = new(UserId, ExpiredTimeInMinute, type);
+            try
+            {                
+                await Repository.AddAsync(Entity);
+                UnitOfWork.SaveChanges();
+            }
+            catch
+            {
+                UnitOfWork.RollBack();
+                throw;
+            }
+            return Entity;
         }
     }
 }

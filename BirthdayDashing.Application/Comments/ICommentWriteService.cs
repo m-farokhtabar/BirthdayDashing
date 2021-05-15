@@ -1,5 +1,4 @@
-﻿using BirthdayDashing.Application.Dtos.Comment;
-using BirthdayDashing.Application.Dtos.Comment.Input;
+﻿using BirthdayDashing.Application.Dtos.Comment.Input;
 using System;
 using System.Threading.Tasks;
 
