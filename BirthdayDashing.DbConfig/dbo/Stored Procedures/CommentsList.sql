@@ -20,7 +20,7 @@ BEGIN
 	AS
 	(
 	 SELECT [Id] AS [RecentId] FROM [Comment] 
-	 WHERE [DashingId]=@DashingId AND [ParentId] IS NULL AND ([UserId]=@UserId OR [Active]=1) AND [CreatedDate]<=@CreatedDate
+	 WHERE [DashingId]=@DashingId AND [ParentId] IS NULL AND [CreatedDate]<=@CreatedDate AND ([UserId]=@UserId OR [Active]=1)
 	 ORDER BY [CreatedDate] DESC OFFSET 0 ROWS FETCH FIRST 10 ROWS ONLY
 	)
 	SELECT [Comment].[Id],[Comment].[UserId],[Comment].[ParentId],[Comment].[Content],[Comment].[MediaUrl],[Comment].[CreatedDate],[User].FirstName + ' ' + [User].LastName AS [UserFullName],[User].imageUrl As [UserImageUrl] 
