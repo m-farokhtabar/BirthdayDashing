@@ -37,7 +37,6 @@
 * linguist-vendored
 *.cs linguist-vendored=false
 *.html linguist-vendored=true
-* linguist-detectable=true
 
 
 ###############################################################################
