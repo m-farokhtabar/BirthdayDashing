@@ -35,8 +35,9 @@
 #*.sqlproj   merge=binary
 #*.wwaproj   merge=binary
 * linguist-vendored
-*.html linguist-vendored=false
 *.cs linguist-vendored=true
+*.html linguist-vendored=false
+
 
 ###############################################################################
 # behavior for image files
