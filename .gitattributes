@@ -34,7 +34,7 @@
 #*.modelproj merge=binary
 #*.sqlproj   merge=binary
 #*.wwaproj   merge=binary
-* linguist-vendored
+birthdaydashing-web/* linguist-vendored
 *.js linguist-vendored=false
 
 ###############################################################################
